@@ -1,7 +1,7 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "Sinking Fund Planner",
+  title: "Sinker",
   description: "Save the right amount, every paycheck, for the bills you know are coming.",
 };
 

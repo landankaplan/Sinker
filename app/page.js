@@ -27,7 +27,7 @@ export default async function DashboardPage() {
       <Nav />
       <main className="mx-auto max-w-3xl px-4 py-8">
         <div className="mb-6 flex items-center justify-between">
-          <h1 className="text-xl font-semibold text-slate-900">Your sinking funds</h1>
+          <h1 className="text-xl font-semibold text-slate-900">Your funds</h1>
           <span className="text-sm text-slate-500">
             Paycheck frequency: <span className="font-medium capitalize">{paycheckFrequency}</span>
           </span>

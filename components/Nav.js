@@ -25,7 +25,7 @@ export default function Nav() {
     <nav className="border-b border-slate-200 bg-white">
       <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
         <div className="flex items-center gap-4">
-          <span className="font-semibold text-slate-900">Sinking Funds</span>
+          <span className="font-semibold text-slate-900">Sinker</span>
           <div className="flex gap-2">
             {LINKS.map((link) => (
               <Link
