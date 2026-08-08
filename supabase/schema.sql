@@ -21,6 +21,19 @@ create table if not exists public.sinking_funds (
   created_at timestamptz not null default now()
 );
 
+-- Progress tracking + completion (added for the progress bar / completed-fund features).
+-- Safe to run even if sinking_funds already existed without these columns.
+alter table public.sinking_funds
+  add column if not exists amount_saved numeric(12, 2) not null default 0;
+
+alter table public.sinking_funds
+  add column if not exists completed_at timestamptz;
+
+alter table public.sinking_funds
+  drop constraint if exists sinking_funds_amount_saved_check;
+alter table public.sinking_funds
+  add constraint sinking_funds_amount_saved_check check (amount_saved >= 0);
+
 create index if not exists sinking_funds_user_id_idx on public.sinking_funds(user_id);
 create index if not exists sinking_funds_target_date_idx on public.sinking_funds(target_date);
 

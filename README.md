@@ -7,8 +7,12 @@ one on time. Built with Next.js (App Router, API routes) and Supabase
 
 ## Features
 
-- Email/password accounts via Supabase Auth
-- Create sinking funds: name, target amount, target date
+- Email/password accounts via Supabase Auth, with a show/hide toggle on password fields
+- Create, edit, and delete funds: name, target amount, target date
+- Log contributions per fund and see a progress bar toward the target
+- Funds auto-complete (and move to a "Completed" section) once fully funded,
+  or you can mark/reopen one manually
+- A "total needed this month" summary across all active funds
 - Automatic per-paycheck savings calculation based on your paycheck frequency
   (weekly / biweekly / monthly), set once in Settings
 - Calendar view of upcoming (and past) due dates, navigable month by month
@@ -27,7 +31,10 @@ one on time. Built with Next.js (App Router, API routes) and Supabase
    In your Supabase project dashboard, open the SQL Editor and run the
    contents of [`supabase/schema.sql`](./supabase/schema.sql). This creates
    the `sinking_funds` and `user_settings` tables with row-level security so
-   each user can only see their own data.
+   each user can only see their own data. The `alter table` statements in
+   there are safe to re-run even if the tables already exist — that's how
+   the `amount_saved` / `completed_at` columns get added to an existing
+   database.
 
 3. **Environment variables**
 

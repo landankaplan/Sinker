@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import PasswordInput from "@/components/PasswordInput";
 
 export default function SignupPage() {
   const supabase = createClient();
@@ -60,14 +61,11 @@ export default function SignupPage() {
           onChange={(e) => setEmail(e.target.value)}
           className="rounded-md border border-slate-300 px-3 py-2 text-sm"
         />
-        <input
-          required
-          type="password"
-          minLength={6}
-          placeholder="Password (min. 6 characters)"
+        <PasswordInput
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+          placeholder="Password (min. 6 characters)"
+          minLength={6}
         />
         {error && <p className="text-sm text-red-600">{error}</p>}
         <button
