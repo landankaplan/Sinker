@@ -248,6 +248,13 @@ export default function FundCard({ fund, paycheckFrequency, completed = false, r
         )}
 
         <div className="flex shrink-0 items-center gap-3">
+          <a
+            href={`/api/funds/${fund.id}/share-image`}
+            download
+            className="text-sm text-slate-400 hover:text-slate-700"
+          >
+            Share
+          </a>
           {!completed && (
             <button onClick={() => setIsEditing(true)} className="text-sm text-slate-400 hover:text-slate-700">
               Edit
