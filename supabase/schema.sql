@@ -68,3 +68,28 @@ create policy "update own funds" on public.sinking_funds
 drop policy if exists "delete own funds" on public.sinking_funds;
 create policy "delete own funds" on public.sinking_funds
   for delete using (auth.uid() = user_id);
+
+-- One row per contribution event (append-only log, not editable/deletable
+-- via the app). Powers the behind-pace insight and, later, streaks and
+-- rate-based shortfall projections - none of which are computable from a
+-- single running total.
+create table if not exists public.fund_contributions (
+  id uuid primary key default gen_random_uuid(),
+  fund_id uuid not null references public.sinking_funds(id) on delete cascade,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  amount numeric(12, 2) not null check (amount > 0),
+  contributed_at timestamptz not null default now()
+);
+
+create index if not exists fund_contributions_fund_id_idx on public.fund_contributions(fund_id);
+create index if not exists fund_contributions_user_id_idx on public.fund_contributions(user_id);
+
+alter table public.fund_contributions enable row level security;
+
+drop policy if exists "select own contributions" on public.fund_contributions;
+create policy "select own contributions" on public.fund_contributions
+  for select using (auth.uid() = user_id);
+
+drop policy if exists "insert own contributions" on public.fund_contributions;
+create policy "insert own contributions" on public.fund_contributions
+  for insert with check (auth.uid() = user_id);

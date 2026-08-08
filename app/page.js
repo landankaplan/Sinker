@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import Nav from "@/components/Nav";
 import FundForm from "@/components/FundForm";
 import FundList from "@/components/FundList";
-import { calculatePerPaycheck, toMonthlyAmount, formatCurrency } from "@/lib/calculations";
+import { calculatePerPaycheck, calculateBehindPace, toMonthlyAmount, formatCurrency } from "@/lib/calculations";
 
 export default async function DashboardPage() {
   const supabase = createClient();
@@ -50,6 +50,16 @@ export default async function DashboardPage() {
       return sum + (isPastDue ? remaining : toMonthlyAmount(perPaycheck, paycheckFrequency));
     }, 0);
 
+  const fundsBehindPace = allFunds.filter((f) => !f.completed_at).filter((fund) => {
+    const behindPace = calculateBehindPace(
+      Number(fund.target_amount),
+      fund.created_at,
+      fund.target_date,
+      Number(fund.amount_saved || 0)
+    );
+    return behindPace.applicable && behindPace.isBehind;
+  }).length;
+
   return (
     <>
       <Nav />
@@ -69,6 +79,11 @@ export default async function DashboardPage() {
           <p className="mt-1 text-xs text-slate-500">
             {SUMMARY_NOTE[paycheckFrequency] || SUMMARY_NOTE.monthly}
           </p>
+          {fundsBehindPace > 0 && (
+            <p className="mt-2 text-xs font-medium text-amber-600">
+              {fundsBehindPace} fund{fundsBehindPace === 1 ? "" : "s"} behind pace
+            </p>
+          )}
         </div>
 
         <FundForm />

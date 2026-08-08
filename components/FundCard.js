@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { calculatePerPaycheck, formatCurrency, formatDate } from "@/lib/calculations";
+import { calculatePerPaycheck, calculateBehindPace, formatCurrency, formatDate } from "@/lib/calculations";
 
 export default function FundCard({ fund, paycheckFrequency, completed = false }) {
   const router = useRouter();
@@ -38,6 +38,17 @@ export default function FundCard({ fund, paycheckFrequency, completed = false })
     remaining,
     fundState.target_date,
     paycheckFrequency
+  );
+
+  // Straight-line pace check: are you where you'd need to be if you'd saved
+  // evenly since creating this fund? Only meaningful for active funds with a
+  // usable created_at/target_date span - see calculateBehindPace's own
+  // edge-case handling for when it reports { applicable: false }.
+  const behindPace = calculateBehindPace(
+    targetAmount,
+    fundState.created_at,
+    fundState.target_date,
+    amountSaved
   );
 
   async function patchFund(body) {
@@ -180,6 +191,15 @@ export default function FundCard({ fund, paycheckFrequency, completed = false })
                 style={{ width: `${progressPct}%` }}
               />
             </div>
+          )}
+
+          {!completed && behindPace.applicable && behindPace.isBehind && (
+            <p className="mt-1 text-xs font-medium text-amber-600">
+              {formatCurrency(behindPace.behindBy)} behind pace
+              <span className="ml-1 font-normal text-slate-400">
+                (you'd have {formatCurrency(behindPace.expectedByNow)} saved by now on an even pace)
+              </span>
+            </p>
           )}
         </div>
 

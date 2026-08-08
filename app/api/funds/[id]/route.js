@@ -87,6 +87,27 @@ export async function PUT(request, { params }) {
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
+  // Log a contribution event whenever this save raised amount_saved. This is
+  // append-only history (separate from the running total on sinking_funds
+  // itself) and is what powers the behind-pace insight. Only a positive
+  // delta counts as a "contribution" - saves that lower amount_saved (a
+  // correction) or leave it unchanged aren't logged. Best-effort: if this
+  // insert fails, we still return the successful fund update rather than
+  // failing the whole request over a secondary write.
+  if (updates.amount_saved !== undefined) {
+    const delta = Number(updates.amount_saved) - Number(existing.amount_saved || 0);
+    if (delta > 0) {
+      const { error: contributionError } = await supabase.from("fund_contributions").insert({
+        fund_id: params.id,
+        user_id: user.id,
+        amount: delta,
+      });
+      if (contributionError) {
+        console.error("Failed to log fund contribution:", contributionError.message);
+      }
+    }
+  }
+
   return NextResponse.json({ fund: data });
 }
 
