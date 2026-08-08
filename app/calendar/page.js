@@ -1,0 +1,28 @@
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import Nav from "@/components/Nav";
+import CalendarView from "@/components/CalendarView";
+
+export default async function CalendarPage() {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) redirect("/login");
+
+  const { data: funds } = await supabase
+    .from("sinking_funds")
+    .select("*")
+    .order("target_date", { ascending: true });
+
+  return (
+    <>
+      <Nav />
+      <main className="mx-auto max-w-3xl px-4 py-8">
+        <h1 className="mb-6 text-xl font-semibold text-slate-900">Calendar</h1>
+        <CalendarView funds={funds || []} />
+      </main>
+    </>
+  );
+}
