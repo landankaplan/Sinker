@@ -2,9 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { calculatePerPaycheck, calculateBehindPace, formatCurrency, formatDate } from "@/lib/calculations";
+import {
+  calculatePerPaycheck,
+  calculateBehindPace,
+  calculateShortfallProjection,
+  formatCurrency,
+  formatDate,
+} from "@/lib/calculations";
 
-export default function FundCard({ fund, paycheckFrequency, completed = false }) {
+export default function FundCard({ fund, paycheckFrequency, completed = false, recentContributions = [] }) {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(fund.name);
@@ -49,6 +55,19 @@ export default function FundCard({ fund, paycheckFrequency, completed = false })
     fundState.created_at,
     fundState.target_date,
     amountSaved
+  );
+
+  // Rate-based projection: at your actual recent contribution pace, will
+  // this fund hit its target by the due date? Stays silent (isShortfall
+  // false) unless there's both real recent activity AND a genuine gap - see
+  // calculateShortfallProjection's own edge-case handling for why "no
+  // recent contributions" doesn't count as a shortfall on its own.
+  const shortfallProjection = calculateShortfallProjection(
+    targetAmount,
+    fundState.target_date,
+    amountSaved,
+    fundState.created_at,
+    recentContributions
   );
 
   async function patchFund(body) {
@@ -198,6 +217,17 @@ export default function FundCard({ fund, paycheckFrequency, completed = false })
               {formatCurrency(behindPace.behindBy)} behind pace
               <span className="ml-1 font-normal text-slate-400">
                 (you'd have {formatCurrency(behindPace.expectedByNow)} saved by now on an even pace)
+              </span>
+            </p>
+          )}
+
+          {!completed && shortfallProjection.applicable && shortfallProjection.isShortfall && (
+            <p className="mt-1 text-xs font-medium text-red-600">
+              {isPastDue
+                ? `Past due and ${formatCurrency(shortfallProjection.shortfall)} short`
+                : `Projected to fall ${formatCurrency(shortfallProjection.shortfall)} short`}
+              <span className="ml-1 font-normal text-slate-400">
+                (at your recent pace of {formatCurrency(shortfallProjection.recentRatePerDay)}/day)
               </span>
             </p>
           )}

@@ -2,7 +2,7 @@
 
 import FundCard from "@/components/FundCard";
 
-export default function FundList({ funds, paycheckFrequency }) {
+export default function FundList({ funds, paycheckFrequency, recentContributionsByFund = {} }) {
   if (funds.length === 0) {
     return (
       <p className="rounded-lg border border-dashed border-slate-300 p-6 text-center text-sm text-slate-500">
@@ -27,7 +27,12 @@ export default function FundList({ funds, paycheckFrequency }) {
       ) : (
         <ul className="flex flex-col gap-3">
           {active.map((fund) => (
-            <FundCard key={fund.id} fund={fund} paycheckFrequency={paycheckFrequency} />
+            <FundCard
+              key={fund.id}
+              fund={fund}
+              paycheckFrequency={paycheckFrequency}
+              recentContributions={recentContributionsByFund[fund.id] || []}
+            />
           ))}
         </ul>
       )}

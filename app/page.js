@@ -13,16 +13,36 @@ export default async function DashboardPage() {
 
   if (!user) redirect("/login");
 
-  const [{ data: funds }, { data: settings }] = await Promise.all([
+  // 30 days is the widest window calculateShortfallProjection ever looks at
+  // (see lib/calculations.js) - fetching that much history up front here
+  // means the per-fund math never needs another round-trip.
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  thirtyDaysAgo.setHours(0, 0, 0, 0);
+
+  const [{ data: funds }, { data: settings }, { data: recentContributions }] = await Promise.all([
     supabase
       .from("sinking_funds")
       .select("*")
       .order("target_date", { ascending: true }),
     supabase.from("user_settings").select("paycheck_frequency").eq("user_id", user.id).maybeSingle(),
+    supabase
+      .from("fund_contributions")
+      .select("fund_id, amount, contributed_at")
+      .eq("user_id", user.id)
+      .gte("contributed_at", thirtyDaysAgo.toISOString()),
   ]);
 
   const paycheckFrequency = settings?.paycheck_frequency || "monthly";
   const allFunds = funds || [];
+
+  // Group the flat contribution list by fund so each FundCard only has to
+  // look at its own history.
+  const recentContributionsByFund = (recentContributions || []).reduce((byFund, contribution) => {
+    if (!byFund[contribution.fund_id]) byFund[contribution.fund_id] = [];
+    byFund[contribution.fund_id].push(contribution);
+    return byFund;
+  }, {});
 
   // weekly/biweekly pay doesn't divide evenly into months (52 or 26 paychecks
   // a year, not 48 or 24) - the summary below uses the true yearly average,
@@ -87,7 +107,11 @@ export default async function DashboardPage() {
         </div>
 
         <FundForm />
-        <FundList funds={allFunds} paycheckFrequency={paycheckFrequency} />
+        <FundList
+          funds={allFunds}
+          paycheckFrequency={paycheckFrequency}
+          recentContributionsByFund={recentContributionsByFund}
+        />
       </main>
     </>
   );
