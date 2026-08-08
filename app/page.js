@@ -24,6 +24,18 @@ export default async function DashboardPage() {
   const paycheckFrequency = settings?.paycheck_frequency || "monthly";
   const allFunds = funds || [];
 
+  // weekly/biweekly pay doesn't divide evenly into months (52 or 26 paychecks
+  // a year, not 48 or 24) - the summary below uses the true yearly average,
+  // which is correct but easy to mistake for a bug if you sanity-check it by
+  // hand assuming a flat 4 or 2 paychecks/month. Spell that out for those two.
+  const SUMMARY_NOTE = {
+    weekly:
+      "Averaged across the year - weekly pay gives you 52 paychecks (not a flat 48), so some months you'll bank a bit more than this.",
+    biweekly:
+      "Averaged across the year - biweekly pay gives you 26 paychecks (not a flat 24), so some months you'll bank a bit more than this.",
+    monthly: "Across all active funds, based on your monthly paycheck.",
+  };
+
   const totalMonthly = allFunds
     .filter((f) => !f.completed_at)
     .reduce((sum, fund) => {
@@ -51,11 +63,11 @@ export default async function DashboardPage() {
 
         <div className="mb-6 rounded-lg border border-slate-200 bg-white p-4">
           <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
-            Total needed this month
+            Average needed per month
           </p>
           <p className="mt-1 text-2xl font-semibold text-slate-900">{formatCurrency(totalMonthly)}</p>
           <p className="mt-1 text-xs text-slate-500">
-            Across all active funds, based on your {paycheckFrequency} paycheck.
+            {SUMMARY_NOTE[paycheckFrequency] || SUMMARY_NOTE.monthly}
           </p>
         </div>
 
