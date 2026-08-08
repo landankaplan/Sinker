@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { calculatePerPaycheck, formatCurrency, formatDate } from "@/lib/calculations";
 
@@ -14,14 +14,24 @@ export default function FundCard({ fund, paycheckFrequency, completed = false })
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
 
-  const amountSaved = Number(fund.amount_saved || 0);
-  const targetAmount = Number(fund.target_amount);
+  // Mirrors the `fund` prop, but is updated immediately from each PUT
+  // response rather than waiting on router.refresh() to deliver fresh
+  // props. Without this, two quick "Add contribution" clicks can both
+  // read the same stale amount_saved and the second overwrites the first
+  // instead of adding to it.
+  const [fundState, setFundState] = useState(fund);
+  useEffect(() => {
+    setFundState(fund);
+  }, [fund]);
+
+  const amountSaved = Number(fundState.amount_saved || 0);
+  const targetAmount = Number(fundState.target_amount);
   const remaining = Math.max(0, targetAmount - amountSaved);
   const progressPct = targetAmount > 0 ? Math.min(100, Math.round((amountSaved / targetAmount) * 100)) : 0;
 
   const { perPaycheck, paychecksRemaining, isPastDue, daysRemaining } = calculatePerPaycheck(
     remaining,
-    fund.target_date,
+    fundState.target_date,
     paycheckFrequency
   );
 
@@ -33,44 +43,52 @@ export default function FundCard({ fund, paycheckFrequency, completed = false })
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
+    const data = await res.json().catch(() => ({}));
     setBusy(false);
 
     if (!res.ok) {
-      const data = await res.json().catch(() => ({}));
       setError(data.error || "Something went wrong.");
-      return false;
+      return null;
     }
+    setFundState(data.fund);
     router.refresh();
-    return true;
+    return data.fund;
   }
 
   async function handleSaveEdit(e) {
     e.preventDefault();
-    const ok = await patchFund({
+    const updated = await patchFund({
       name: editName,
       target_amount: parseFloat(editAmount),
       target_date: editDate,
     });
-    if (ok) setIsEditing(false);
+    if (updated) setIsEditing(false);
   }
 
   async function handleAddContribution(e) {
     e.preventDefault();
     const amt = parseFloat(contribution);
     if (!amt || amt <= 0) return;
-    const ok = await patchFund({ amount_saved: amountSaved + amt });
-    if (ok) setContribution("");
+    const updated = await patchFund({ amount_saved: amountSaved + amt });
+    if (updated) setContribution("");
   }
 
   async function handleToggleComplete() {
-    await patchFund({ completed_at: fund.completed_at ? null : new Date().toISOString() });
+    await patchFund({ completed_at: fundState.completed_at ? null : new Date().toISOString() });
   }
 
   async function handleDelete() {
     setBusy(true);
+    setError(null);
     const res = await fetch(`/api/funds/${fund.id}`, { method: "DELETE" });
     setBusy(false);
-    if (res.ok) router.refresh();
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      setError(data.error || "Couldn't delete this fund. Try again.");
+      return;
+    }
+    router.refresh();
   }
 
   if (isEditing) {
@@ -140,13 +158,13 @@ export default function FundCard({ fund, paycheckFrequency, completed = false })
         <div className="flex-1">
           <p className="font-medium text-slate-900">
             {completed && <span className="mr-1 text-green-600">✓</span>}
-            {fund.name}
+            {fundState.name}
           </p>
           <p className="text-sm text-slate-500">
             {formatCurrency(amountSaved)} of {formatCurrency(targetAmount)} saved
             {completed
-              ? ` — completed ${formatDate(fund.completed_at)}`
-              : ` — due ${formatDate(fund.target_date)}`}
+              ? ` — completed ${formatDate(fundState.completed_at)}`
+              : ` — due ${formatDate(fundState.target_date)}`}
             {!completed && isPastDue && <span className="ml-2 font-medium text-red-600">past due</span>}
           </p>
 
