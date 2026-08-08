@@ -60,12 +60,15 @@ export async function PUT(request, { params }) {
   const manualCompletionChange = Object.prototype.hasOwnProperty.call(body, "completed_at");
   if (manualCompletionChange) {
     updates.completed_at = body.completed_at;
-  } else {
-    // Otherwise, auto-complete the fund the moment a contribution brings
-    // amount_saved up to (or past) the target - but never auto-reopen one.
-    const effectiveAmountSaved = updates.amount_saved ?? Number(existing.amount_saved);
+  } else if (updates.amount_saved !== undefined) {
+    // Auto-complete only in reaction to a contribution actually reaching the
+    // target - NOT on every unrelated edit. This matters because a reopened
+    // fund (completed_at just set back to null) still has amount_saved >=
+    // target_amount until a new contribution changes it; if we re-checked
+    // that invariant on every save, the very next name/date/amount edit
+    // would instantly re-complete it and "reopen" would never stick.
     const effectiveTarget = updates.target_amount ?? Number(existing.target_amount);
-    if (!existing.completed_at && effectiveAmountSaved >= effectiveTarget) {
+    if (!existing.completed_at && updates.amount_saved >= effectiveTarget) {
       updates.completed_at = new Date().toISOString();
     }
   }

@@ -8,6 +8,11 @@ export default function PasswordInput({
   placeholder = "Password",
   minLength,
   required = true,
+  // "current-password" is correct for login, but signup forms should send
+  // "new-password" - otherwise browsers/password managers can try to fill
+  // an existing saved password instead of offering to generate/save a new
+  // one. Callers must pass the right one for their form.
+  autoComplete = "current-password",
 }) {
   const [visible, setVisible] = useState(false);
 
@@ -20,13 +25,12 @@ export default function PasswordInput({
         placeholder={placeholder}
         value={value}
         onChange={onChange}
-        autoComplete="current-password"
+        autoComplete={autoComplete}
         className="w-full rounded-md border border-slate-300 px-3 py-2 pr-10 text-sm"
       />
       <button
         type="button"
         onClick={() => setVisible((v) => !v)}
-        tabIndex={-1}
         aria-label={visible ? "Hide password" : "Show password"}
         aria-pressed={visible}
         className="absolute inset-y-0 right-0 flex items-center px-3 text-slate-400 hover:text-slate-600"

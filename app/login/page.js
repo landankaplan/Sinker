@@ -45,7 +45,12 @@ export default function LoginPage() {
           onChange={(e) => setEmail(e.target.value)}
           className="rounded-md border border-slate-300 px-3 py-2 text-sm"
         />
-        <PasswordInput value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
+        <PasswordInput
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Password"
+          autoComplete="current-password"
+        />
         {error && <p className="text-sm text-red-600">{error}</p>}
         <button
           type="submit"

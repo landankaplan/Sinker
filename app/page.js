@@ -28,8 +28,14 @@ export default async function DashboardPage() {
     .filter((f) => !f.completed_at)
     .reduce((sum, fund) => {
       const remaining = Math.max(0, Number(fund.target_amount) - Number(fund.amount_saved || 0));
-      const { perPaycheck } = calculatePerPaycheck(remaining, fund.target_date, paycheckFrequency);
-      return sum + toMonthlyAmount(perPaycheck, paycheckFrequency);
+      const { perPaycheck, isPastDue } = calculatePerPaycheck(remaining, fund.target_date, paycheckFrequency);
+      // For a past-due fund, calculatePerPaycheck returns the full remaining
+      // balance as "perPaycheck" (pay it now). Feeding that through
+      // toMonthlyAmount would multiply it by paychecks-per-month as if it
+      // recurred every paycheck, wildly overstating what's actually owed
+      // (e.g. a $200 overdue balance would show as $433/mo needed on a
+      // biweekly schedule). Add the one-time remaining balance directly instead.
+      return sum + (isPastDue ? remaining : toMonthlyAmount(perPaycheck, paycheckFrequency));
     }, 0);
 
   return (

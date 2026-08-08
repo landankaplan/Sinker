@@ -66,6 +66,7 @@ export default function SignupPage() {
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Password (min. 6 characters)"
           minLength={6}
+          autoComplete="new-password"
         />
         {error && <p className="text-sm text-red-600">{error}</p>}
         <button

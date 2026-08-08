@@ -27,7 +27,12 @@ export default function FundCard({ fund, paycheckFrequency, completed = false })
   const amountSaved = Number(fundState.amount_saved || 0);
   const targetAmount = Number(fundState.target_amount);
   const remaining = Math.max(0, targetAmount - amountSaved);
-  const progressPct = targetAmount > 0 ? Math.min(100, Math.round((amountSaved / targetAmount) * 100)) : 0;
+  // Clamped both directions: the API already rejects negative amount_saved
+  // and the DB requires target_amount > 0, so neither should happen in
+  // practice - but the bar shouldn't visually break (negative width /
+  // overflow) if bad data ever gets in some other way (direct DB edit, etc).
+  const progressPct =
+    targetAmount > 0 ? Math.max(0, Math.min(100, Math.round((amountSaved / targetAmount) * 100))) : 0;
 
   const { perPaycheck, paychecksRemaining, isPastDue, daysRemaining } = calculatePerPaycheck(
     remaining,
