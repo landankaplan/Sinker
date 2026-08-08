@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import Nav from "@/components/Nav";
 import FundForm from "@/components/FundForm";
 import FundList from "@/components/FundList";
+import OnboardingWelcome from "@/components/OnboardingWelcome";
 import { calculatePerPaycheck, calculateBehindPace, toMonthlyAmount, formatCurrency } from "@/lib/calculations";
 
 export default async function DashboardPage() {
@@ -84,6 +85,8 @@ export default async function DashboardPage() {
     <>
       <Nav />
       <main className="mx-auto max-w-3xl px-4 py-8">
+        {!settings && <OnboardingWelcome />}
+
         <div className="mb-6 flex items-center justify-between">
           <h1 className="text-xl font-semibold text-slate-900">Your funds</h1>
           <span className="text-sm text-slate-500">
@@ -106,7 +109,7 @@ export default async function DashboardPage() {
           )}
         </div>
 
-        <FundForm />
+        <FundForm showExamples={allFunds.length === 0} />
         <FundList
           funds={allFunds}
           paycheckFrequency={paycheckFrequency}

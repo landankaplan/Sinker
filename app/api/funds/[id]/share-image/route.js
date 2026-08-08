@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 import { createClient } from "@/lib/supabase/server";
-import { formatCurrency, formatDate } from "@/lib/calculations";
+import { formatCurrency, formatDate, isAheadOfSchedule } from "@/lib/calculations";
 
 // Dark, vertical (1080x1920) shareable card for a single fund - sized for a
 // TikTok/story-style post. Built on next/og's ImageResponse, which ships
@@ -39,19 +39,11 @@ export async function GET(request, { params }) {
 
   const completed = Boolean(fund.completed_at);
 
-  // "Funded ahead of schedule": a date-only comparison (not raw timestamp
-  // vs. raw timestamp) so completing ON the due date, at any time of day,
-  // reads as on-time rather than ahead. Verified against three cases before
-  // shipping: 11 days early -> true, completing on the due date itself
-  // (even at 11pm) -> false, one day late -> false.
-  let aheadOfSchedule = false;
-  if (completed) {
-    const completedDate = new Date(fund.completed_at);
-    completedDate.setHours(0, 0, 0, 0);
-    const targetDateOnly = new Date(fund.target_date);
-    targetDateOnly.setHours(0, 0, 0, 0);
-    aheadOfSchedule = completedDate.getTime() < targetDateOnly.getTime();
-  }
+  // Shared with the rest of the app (lib/calculations.js) rather than
+  // duplicated inline - this used to be hand-written here separately,
+  // which is exactly how a fix applied in one place and not the other
+  // causes future drift.
+  const aheadOfSchedule = isAheadOfSchedule(fund.completed_at, fund.target_date);
 
   // A long name would otherwise overflow the fixed-width card.
   const displayName = fund.name.length > 28 ? `${fund.name.slice(0, 27)}…` : fund.name;

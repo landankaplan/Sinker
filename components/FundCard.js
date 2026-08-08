@@ -234,7 +234,7 @@ export default function FundCard({ fund, paycheckFrequency, completed = false, r
         </div>
 
         {!completed && (
-          <div className="text-right">
+          <div className="text-left sm:text-right">
             <p className="font-semibold text-slate-900">
               {formatCurrency(perPaycheck)}
               <span className="text-xs font-normal text-slate-500"> / paycheck</span>
@@ -247,7 +247,7 @@ export default function FundCard({ fund, paycheckFrequency, completed = false, r
           </div>
         )}
 
-        <div className="flex shrink-0 items-center gap-3">
+        <div className="flex shrink-0 flex-wrap items-center gap-3">
           <a
             href={`/api/funds/${fund.id}/share-image`}
             download

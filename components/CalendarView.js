@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { formatCurrency } from "@/lib/calculations";
+import { formatCurrency, parseDateOnly } from "@/lib/calculations";
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MONTH_NAMES = [
@@ -32,7 +32,11 @@ export default function CalendarView({ funds }) {
   const fundsByDay = useMemo(() => {
     const map = {};
     for (const fund of funds) {
-      const d = new Date(fund.target_date);
+      // parseDateOnly, not new Date() - target_date is a bare calendar date
+      // and raw new Date() parsing would bucket it under the wrong day for
+      // any viewer west of UTC (see lib/calculations.js for the full
+      // explanation of this bug class).
+      const d = parseDateOnly(fund.target_date);
       if (d.getFullYear() === year && d.getMonth() === month) {
         const day = d.getDate();
         map[day] = map[day] || [];
