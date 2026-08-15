@@ -93,3 +93,37 @@ create policy "select own contributions" on public.fund_contributions
 drop policy if exists "insert own contributions" on public.fund_contributions;
 create policy "insert own contributions" on public.fund_contributions
   for insert with check (auth.uid() = user_id);
+
+-- Email notifications: whether this user wants due-date reminders and
+-- underfunded-goal alerts at all. Defaults to true (opt-out, not opt-in) so
+-- the feature is actually experienced by default once it's configured -
+-- see the Settings page for the toggle to turn it off.
+alter table public.user_settings
+  add column if not exists email_notifications_enabled boolean not null default true;
+
+-- Idempotency log for the notifications cron job (app/api/cron/notifications).
+-- One row per notification actually sent. The cron route checks this table
+-- before sending so a fund never gets the same "due in 7 days" reminder
+-- twice, and "underfunded" alerts are spaced out (see
+-- lib/notifications.js's shouldSendUnderfundedAlert) rather than firing
+-- every single day a fund stays behind pace.
+create table if not exists public.notification_log (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  fund_id uuid not null references public.sinking_funds(id) on delete cascade,
+  notification_type text not null check (notification_type in ('due_in_7', 'due_in_1', 'underfunded')),
+  sent_at timestamptz not null default now()
+);
+
+create index if not exists notification_log_fund_type_idx on public.notification_log(fund_id, notification_type);
+
+-- This table is only ever written by the cron route using the service-role
+-- key (see lib/supabase/admin.js), which bypasses RLS entirely - so no
+-- insert/update/delete policy is needed for regular users. The select
+-- policy just lets a signed-in user see their own notification history if
+-- a "notifications sent" view ever gets built later; it isn't used yet.
+alter table public.notification_log enable row level security;
+
+drop policy if exists "select own notification log" on public.notification_log;
+create policy "select own notification log" on public.notification_log
+  for select using (auth.uid() = user_id);

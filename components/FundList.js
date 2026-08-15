@@ -6,16 +6,16 @@ import { parseDateOnly } from "@/lib/calculations";
 export default function FundList({ funds, paycheckFrequency, recentContributionsByFund = {} }) {
   if (funds.length === 0) {
     return (
-      <div className="rounded-lg border border-dashed border-slate-300 p-8 text-center">
+      <div className="rounded-xl border border-dashed border-cream-100 bg-white p-8 text-center">
         <p className="text-3xl">🎯</p>
-        <p className="mt-2 text-base font-semibold text-slate-900">Nothing tracked yet</p>
-        <p className="mx-auto mt-1 max-w-sm text-sm text-slate-500">
+        <p className="mt-2 text-base font-semibold text-ink">Nothing tracked yet</p>
+        <p className="mx-auto mt-1 max-w-sm text-sm text-ink-muted">
           A sinking fund is just a bill or goal you know is coming — Sinker figures out exactly how much
           to set aside from each paycheck so it's ready when it's due.
         </p>
         <a
           href="#fund-form"
-          className="mt-4 inline-block rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
+          className="mt-4 inline-block rounded-md bg-coral-600 px-4 py-2 text-sm font-medium text-white hover:bg-coral-700"
         >
           Add your first fund ↑
         </a>
@@ -36,7 +36,7 @@ export default function FundList({ funds, paycheckFrequency, recentContributions
   return (
     <div className="flex flex-col gap-6">
       {active.length === 0 ? (
-        <p className="rounded-lg border border-dashed border-slate-300 p-6 text-center text-sm text-slate-500">
+        <p className="rounded-xl border border-dashed border-cream-100 bg-white p-6 text-center text-sm text-ink-muted">
           All caught up — no active funds right now.
         </p>
       ) : (
@@ -54,7 +54,7 @@ export default function FundList({ funds, paycheckFrequency, recentContributions
 
       {completed.length > 0 && (
         <div>
-          <h2 className="mb-2 text-sm font-semibold text-slate-500">Completed</h2>
+          <h2 className="mb-2 text-sm font-semibold text-ink-muted">Completed</h2>
           <ul className="flex flex-col gap-2">
             {completed.map((fund) => (
               <FundCard key={fund.id} fund={fund} paycheckFrequency={paycheckFrequency} completed />

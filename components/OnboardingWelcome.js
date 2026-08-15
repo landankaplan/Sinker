@@ -44,20 +44,20 @@ export default function OnboardingWelcome() {
   }
 
   return (
-    <div className="mb-6 rounded-lg border border-slate-200 bg-white p-5">
-      <p className="text-lg font-semibold text-slate-900">Welcome to Sinker 👋</p>
-      <p className="mt-1 text-sm text-slate-500">
+    <div className="mb-6 rounded-xl bg-white p-5 shadow-sm">
+      <p className="text-lg font-semibold text-ink">Welcome to Sinker 👋</p>
+      <p className="mt-1 text-sm text-ink-muted">
         Sinker figures out exactly how much to set aside from each paycheck for bills and goals you know
         are coming. One quick thing first — how often do you get paid? This is used everywhere in the
         app, so getting it right now saves you from redoing the math later.
       </p>
       <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">
         <div className="flex-1">
-          <label className="block text-xs font-medium text-slate-500">Paycheck frequency</label>
+          <label className="block text-xs font-medium text-ink-muted">Paycheck frequency</label>
           <select
             value={frequency}
             onChange={(e) => setFrequency(e.target.value)}
-            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-md border border-cream-100 px-3 py-2 text-sm focus:border-coral-500 focus:outline-none focus:ring-1 focus:ring-coral-500"
           >
             {OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -70,7 +70,7 @@ export default function OnboardingWelcome() {
           type="button"
           onClick={() => save(frequency)}
           disabled={submitting}
-          className="w-full rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50 sm:w-auto"
+          className="w-full rounded-md bg-coral-600 px-4 py-2 text-sm font-medium text-white hover:bg-coral-700 disabled:opacity-50 sm:w-auto"
         >
           {submitting ? "Saving…" : "Get started"}
         </button>
@@ -78,7 +78,7 @@ export default function OnboardingWelcome() {
           type="button"
           onClick={() => save("monthly")}
           disabled={submitting}
-          className="text-sm text-slate-400 hover:text-slate-700"
+          className="text-sm text-ink-muted hover:text-ink"
         >
           Skip — assume monthly
         </button>

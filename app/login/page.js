@@ -34,8 +34,8 @@ export default function LoginPage() {
 
   return (
     <main className="mx-auto flex min-h-screen max-w-sm flex-col justify-center px-4">
-      <h1 className="mb-1 text-xl font-semibold text-slate-900">Log in</h1>
-      <p className="mb-6 text-sm text-slate-500">Welcome back to Sinker.</p>
+      <h1 className="mb-1 text-xl font-semibold text-ink">Log in</h1>
+      <p className="mb-6 text-sm text-ink-muted">Welcome back to Sinker.</p>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <input
           required
@@ -43,7 +43,7 @@ export default function LoginPage() {
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+          className="rounded-md border border-cream-100 px-3 py-2 text-sm focus:border-coral-500 focus:outline-none focus:ring-1 focus:ring-coral-500"
         />
         <PasswordInput
           value={password}
@@ -55,14 +55,14 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={submitting}
-          className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+          className="rounded-md bg-coral-600 px-4 py-2 text-sm font-medium text-white hover:bg-coral-700 disabled:opacity-50"
         >
           {submitting ? "Logging in…" : "Log in"}
         </button>
       </form>
-      <p className="mt-4 text-sm text-slate-500">
+      <p className="mt-4 text-sm text-ink-muted">
         No account yet?{" "}
-        <Link href="/signup" className="font-medium text-slate-900 underline">
+        <Link href="/signup" className="font-medium text-coral-600 underline">
           Sign up
         </Link>
       </p>

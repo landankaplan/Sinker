@@ -40,8 +40,8 @@ export default function SignupPage() {
   if (done) {
     return (
       <main className="mx-auto flex min-h-screen max-w-sm flex-col justify-center px-4 text-center">
-        <h1 className="mb-2 text-xl font-semibold text-slate-900">Check your email</h1>
-        <p className="text-sm text-slate-500">
+        <h1 className="mb-2 text-xl font-semibold text-ink">Check your email</h1>
+        <p className="text-sm text-ink-muted">
           We sent a confirmation link to {email}. Click it, then come back and log in.
         </p>
       </main>
@@ -50,8 +50,8 @@ export default function SignupPage() {
 
   return (
     <main className="mx-auto flex min-h-screen max-w-sm flex-col justify-center px-4">
-      <h1 className="mb-1 text-xl font-semibold text-slate-900">Sign up</h1>
-      <p className="mb-6 text-sm text-slate-500">Start planning for the bills you know are coming.</p>
+      <h1 className="mb-1 text-xl font-semibold text-ink">Sign up</h1>
+      <p className="mb-6 text-sm text-ink-muted">Start planning for the bills you know are coming.</p>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <input
           required
@@ -59,7 +59,7 @@ export default function SignupPage() {
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+          className="rounded-md border border-cream-100 px-3 py-2 text-sm focus:border-coral-500 focus:outline-none focus:ring-1 focus:ring-coral-500"
         />
         <PasswordInput
           value={password}
@@ -72,14 +72,14 @@ export default function SignupPage() {
         <button
           type="submit"
           disabled={submitting}
-          className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+          className="rounded-md bg-coral-600 px-4 py-2 text-sm font-medium text-white hover:bg-coral-700 disabled:opacity-50"
         >
           {submitting ? "Signing up…" : "Sign up"}
         </button>
       </form>
-      <p className="mt-4 text-sm text-slate-500">
+      <p className="mt-4 text-sm text-ink-muted">
         Already have an account?{" "}
-        <Link href="/login" className="font-medium text-slate-900 underline">
+        <Link href="/login" className="font-medium text-coral-600 underline">
           Log in
         </Link>
       </p>

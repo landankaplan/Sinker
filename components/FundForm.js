@@ -9,6 +9,9 @@ const EXAMPLES = [
   { name: "Emergency fund", amount: "1000" },
 ];
 
+const inputClass =
+  "mt-1 w-full rounded-md border border-cream-100 px-3 py-2 text-sm focus:border-coral-500 focus:outline-none focus:ring-1 focus:ring-coral-500";
+
 export default function FundForm({ showExamples = false }) {
   const router = useRouter();
   const [name, setName] = useState("");
@@ -55,17 +58,17 @@ export default function FundForm({ showExamples = false }) {
     <form
       id="fund-form"
       onSubmit={handleSubmit}
-      className="mb-6 flex flex-col gap-3 rounded-lg border border-slate-200 bg-white p-4"
+      className="mb-6 flex flex-col gap-3 rounded-xl bg-white p-4 shadow-sm"
     >
       {showExamples && (
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-medium text-slate-500">Try an example:</span>
+          <span className="text-xs font-medium text-ink-muted">Try an example:</span>
           {EXAMPLES.map((example) => (
             <button
               key={example.name}
               type="button"
               onClick={() => applyExample(example)}
-              className="rounded-full border border-slate-300 px-3 py-1 text-xs font-medium text-slate-600 hover:bg-slate-100"
+              className="rounded-full bg-cream-100 px-3 py-1 text-xs font-medium text-ink-muted hover:bg-coral-50 hover:text-coral-600"
             >
               {example.name}
             </button>
@@ -74,17 +77,17 @@ export default function FundForm({ showExamples = false }) {
       )}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
         <div className="flex-1">
-          <label className="block text-xs font-medium text-slate-500">Name</label>
+          <label className="block text-xs font-medium text-ink-muted">Name</label>
           <input
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Car Insurance"
-            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+            className={inputClass}
           />
         </div>
         <div className="w-full sm:w-32">
-          <label className="block text-xs font-medium text-slate-500">Target amount</label>
+          <label className="block text-xs font-medium text-ink-muted">Target amount</label>
           <input
             required
             type="number"
@@ -93,23 +96,23 @@ export default function FundForm({ showExamples = false }) {
             value={targetAmount}
             onChange={(e) => setTargetAmount(e.target.value)}
             placeholder="600"
-            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+            className={inputClass}
           />
         </div>
         <div className="w-full sm:w-40">
-          <label className="block text-xs font-medium text-slate-500">Due date</label>
+          <label className="block text-xs font-medium text-ink-muted">Due date</label>
           <input
             required
             type="date"
             value={targetDate}
             onChange={(e) => setTargetDate(e.target.value)}
-            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+            className={inputClass}
           />
         </div>
         <button
           type="submit"
           disabled={submitting}
-          className="w-full rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50 sm:w-auto"
+          className="w-full rounded-md bg-coral-600 px-4 py-2 text-sm font-medium text-white hover:bg-coral-700 disabled:opacity-50 sm:w-auto"
         >
           {submitting ? "Adding…" : "Add fund"}
         </button>

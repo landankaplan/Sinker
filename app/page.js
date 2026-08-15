@@ -88,18 +88,18 @@ export default async function DashboardPage() {
         {!settings && <OnboardingWelcome />}
 
         <div className="mb-6 flex items-center justify-between">
-          <h1 className="text-xl font-semibold text-slate-900">Your funds</h1>
-          <span className="text-sm text-slate-500">
+          <h1 className="text-xl font-semibold text-ink">Your funds</h1>
+          <span className="text-sm text-ink-muted">
             Paycheck frequency: <span className="font-medium capitalize">{paycheckFrequency}</span>
           </span>
         </div>
 
-        <div className="mb-6 rounded-lg border border-slate-200 bg-white p-4">
-          <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+        <div className="mb-6 rounded-xl bg-white p-4 shadow-sm">
+          <p className="text-xs font-medium uppercase tracking-wide text-ink-muted">
             Average needed per month
           </p>
-          <p className="mt-1 text-2xl font-semibold text-slate-900">{formatCurrency(totalMonthly)}</p>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-1 text-2xl font-bold text-coral-600">{formatCurrency(totalMonthly)}</p>
+          <p className="mt-1 text-xs text-ink-muted">
             {SUMMARY_NOTE[paycheckFrequency] || SUMMARY_NOTE.monthly}
           </p>
           {fundsBehindPace > 0 && (
