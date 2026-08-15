@@ -1,6 +1,7 @@
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
+import InstallTracking from "@/components/InstallTracking";
 
 export const metadata = {
   title: "Sinker",
@@ -38,6 +39,7 @@ export default function RootLayout({ children }) {
       <body className="min-h-screen bg-cream-50 text-ink">
         {children}
         <ServiceWorkerRegister />
+        <InstallTracking />
         <Analytics />
       </body>
     </html>
