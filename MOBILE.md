@@ -1,8 +1,7 @@
 # Putting StayAhead on the App Store / Google Play, later
 
-> Note: the live site is still at `sinker-one.vercel.app` for now — the app
-> was renamed from "Sinker" to "StayAhead" in-app, but the URL itself is a
-> separate, optional change (see the note at the bottom of this file).
+> The live site is at `stayahead-kaplan.vercel.app` — renamed from the old
+> `sinker-one.vercel.app` address to match the app's name.
 
 Not needed yet — this is just the checklist for whenever you're ready
 (you'll need to be 18, or have a parent/guardian set up the developer
@@ -37,7 +36,7 @@ Capacitor at your live URL sidesteps that entirely.
 3. **Point it at your live site** instead of bundling a static copy — in
    the generated `capacitor.config.json`, set:
    ```json
-   { "server": { "url": "https://sinker-one.vercel.app", "cleartext": false } }
+   { "server": { "url": "https://stayahead-kaplan.vercel.app", "cleartext": false } }
    ```
 4. **Native icons/splash screens**: reuse the same coral calendar+dollar mark
    already in `public/icons/` at higher resolution via `@capacitor/assets`.
@@ -58,9 +57,7 @@ to build now — just worth knowing before you commit to a plan later.
 
 ## Renaming the live URL to match
 
-The app itself now says "StayAhead" everywhere, but the live site is still
-at `sinker-one.vercel.app` — renaming that is a separate, optional step
-(Vercel project settings → rename, or buy/connect a custom domain). Not
-done automatically because changing the URL can break anyone who's already
-added the old one to their home screen until they re-install from the new
-address — worth doing deliberately, not as a side effect of a code change.
+Done — the live site moved from `sinker-one.vercel.app` to
+`stayahead-kaplan.vercel.app`. Anyone with the old address saved to a home
+screen will need to remove that icon and re-add it from the new one; the
+old link isn't guaranteed to keep working.

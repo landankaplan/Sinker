@@ -19,26 +19,42 @@ export default function SettingsForm({
   const [emailNotificationsEnabled, setEmailNotificationsEnabled] = useState(currentEmailNotificationsEnabled);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState(null);
 
   async function handleSubmit(e) {
     e.preventDefault();
     setSaving(true);
     setSaved(false);
+    setError(null);
 
-    const res = await fetch("/api/settings", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        paycheck_frequency: frequency,
-        email_notifications_enabled: emailNotificationsEnabled,
-      }),
-    });
+    let res;
+    try {
+      res = await fetch("/api/settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          paycheck_frequency: frequency,
+          email_notifications_enabled: emailNotificationsEnabled,
+        }),
+      });
+    } catch (err) {
+      setSaving(false);
+      setError("Couldn't reach the server. Check your connection and try again.");
+      return;
+    }
 
     setSaving(false);
 
     if (res.ok) {
       setSaved(true);
       router.refresh();
+    } else {
+      // Surface *why* it failed instead of just doing nothing - the most
+      // common cause is the database being missing a column this form
+      // needs (see supabase/schema.sql), which shows up here as a Postgres
+      // error message rather than a generic failure.
+      const body = await res.json().catch(() => null);
+      setError(body?.error || "Something went wrong saving your settings. Please try again.");
     }
   }
 
@@ -86,6 +102,10 @@ export default function SettingsForm({
           </p>
         )}
       </div>
+
+      {error && (
+        <p className="rounded-md bg-red-50 px-3 py-2 text-xs font-medium text-red-700">{error}</p>
+      )}
 
       <button
         type="submit"
