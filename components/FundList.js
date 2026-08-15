@@ -10,7 +10,7 @@ export default function FundList({ funds, paycheckFrequency, recentContributions
         <p className="text-3xl">🎯</p>
         <p className="mt-2 text-base font-semibold text-ink">Nothing tracked yet</p>
         <p className="mx-auto mt-1 max-w-sm text-sm text-ink-muted">
-          A sinking fund is just a bill or goal you know is coming — Sinker figures out exactly how much
+          A sinking fund is just a bill or goal you know is coming — StayAhead figures out exactly how much
           to set aside from each paycheck so it's ready when it's due.
         </p>
         <a

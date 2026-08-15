@@ -1,4 +1,8 @@
-# Putting Sinker on the App Store / Google Play, later
+# Putting StayAhead on the App Store / Google Play, later
+
+> Note: the live site is still at `sinker-one.vercel.app` for now — the app
+> was renamed from "Sinker" to "StayAhead" in-app, but the URL itself is a
+> separate, optional change (see the note at the bottom of this file).
 
 Not needed yet — this is just the checklist for whenever you're ready
 (you'll need to be 18, or have a parent/guardian set up the developer
@@ -7,13 +11,13 @@ legal adult).
 
 ## Why this will be easy, not a rewrite
 
-Sinker is already installable as a web app (see the PWA setup added
+StayAhead is already installable as a web app (see the PWA setup added
 alongside this file). The standard way to turn an existing web app into a
 real App Store / Play Store listing is **Capacitor** — it wraps your
 *already-live* website in a thin native shell. You keep 100% of your
 existing code; the native app just opens your real site
 (`sinker-one.vercel.app`) inside a native window instead of a browser tab.
-This matters for Sinker specifically because your login, funds, and
+This matters for StayAhead specifically because your login, funds, and
 notifications all depend on your Next.js server (Supabase auth, API
 routes) — a "static export" approach wouldn't work here, but pointing
 Capacitor at your live URL sidesteps that entirely.
@@ -26,7 +30,7 @@ Capacitor at your live URL sidesteps that entirely.
 2. **Install Capacitor** in the project:
    ```
    npm install @capacitor/core @capacitor/cli
-   npx cap init Sinker com.yourname.sinker
+   npx cap init StayAhead com.yourname.stayahead
    npx cap add ios
    npx cap add android
    ```
@@ -35,15 +39,15 @@ Capacitor at your live URL sidesteps that entirely.
    ```json
    { "server": { "url": "https://sinker-one.vercel.app", "cleartext": false } }
    ```
-4. **Native icons/splash screens**: reuse the same coral "S" mark already
-   in `public/icons/` at higher resolution via `@capacitor/assets`.
+4. **Native icons/splash screens**: reuse the same coral calendar+dollar mark
+   already in `public/icons/` at higher resolution via `@capacitor/assets`.
 5. **Build and submit**: `npx cap open ios` (needs a Mac with Xcode) /
    `npx cap open android` (needs Android Studio) — then submit through App
    Store Connect / Google Play Console like any other app.
 
 ## One thing worth deciding ahead of time: payments
 
-If you ever charge for Sinker (the $5–10/month idea from earlier), Apple
+If you ever charge for StayAhead (the $5–10/month idea from earlier), Apple
 and Google both **require using their own in-app purchase system** for
 anything unlocked inside the native app — they take a 15–30% cut, and you
 can't just use Stripe inside the app binary. A common workaround indie
@@ -51,3 +55,12 @@ apps use: keep the *website/installed-PWA version* on Stripe (no cut,
 full control), and either keep the native app free, or set it up with
 their in-app purchase system separately if you want it there too. Nothing
 to build now — just worth knowing before you commit to a plan later.
+
+## Renaming the live URL to match
+
+The app itself now says "StayAhead" everywhere, but the live site is still
+at `sinker-one.vercel.app` — renaming that is a separate, optional step
+(Vercel project settings → rename, or buy/connect a custom domain). Not
+done automatically because changing the URL can break anyone who's already
+added the old one to their home screen until they re-install from the new
+address — worth doing deliberately, not as a side effect of a code change.

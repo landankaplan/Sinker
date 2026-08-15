@@ -1,9 +1,9 @@
-# Sinking Fund & Bill Calendar
+# StayAhead
 
-Track known future expenses ("sinking funds") — like car insurance or an annual
-subscription — and see exactly how much to set aside per paycheck to hit each
-one on time. Built with Next.js (App Router, API routes) and Supabase
-(Postgres + Auth).
+Track known future expenses (bills, goals — the finance term for this is a
+"sinking fund") — like car insurance or an annual subscription — and see
+exactly how much to set aside per paycheck to hit each one on time. Built
+with Next.js (App Router, API routes) and Supabase (Postgres + Auth).
 
 ## Features
 

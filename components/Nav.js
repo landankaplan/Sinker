@@ -25,7 +25,7 @@ export default function Nav() {
     <nav className="bg-white shadow-sm">
       <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-y-2 px-4 py-3">
         <div className="flex flex-wrap items-center gap-3 sm:gap-4">
-          <span className="font-bold text-coral-600">Sinker</span>
+          <span className="font-bold text-coral-600">StayAhead</span>
           <div className="flex flex-wrap gap-1.5 sm:gap-2">
             {LINKS.map((link) => (
               <Link

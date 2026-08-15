@@ -35,7 +35,7 @@ export default function LoginPage() {
   return (
     <main className="mx-auto flex min-h-screen max-w-sm flex-col justify-center px-4">
       <h1 className="mb-1 text-xl font-semibold text-ink">Log in</h1>
-      <p className="mb-6 text-sm text-ink-muted">Welcome back to Sinker.</p>
+      <p className="mb-6 text-sm text-ink-muted">Welcome back to StayAhead.</p>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <input
           required

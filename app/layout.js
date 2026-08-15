@@ -4,14 +4,14 @@ import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import InstallTracking from "@/components/InstallTracking";
 
 export const metadata = {
-  title: "Sinker",
+  title: "StayAhead",
   description: "Save the right amount, every paycheck, for the bills you know are coming.",
   // Next.js auto-generates this at /manifest.webmanifest from app/manifest.js -
   // this just points the browser at it so it knows the site is installable.
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
-    title: "Sinker",
+    title: "StayAhead",
     // "default" gives a plain white iOS status bar; matches the app's light
     // cream background better than the black/translucent alternatives.
     statusBarStyle: "default",

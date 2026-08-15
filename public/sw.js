@@ -1,4 +1,4 @@
-// Sinker's service worker - deliberately minimal.
+// StayAhead's service worker - deliberately minimal.
 //
 // This app shows real dollar amounts and due dates, so this worker NEVER
 // caches page HTML or API/Supabase responses - only Next.js's own build
@@ -13,7 +13,7 @@
 // you get a plain "you're offline" page instead of a browser error, not a
 // stale copy of your funds.
 
-const STATIC_CACHE = "sinker-static-v1";
+const STATIC_CACHE = "stayahead-static-v1";
 const OFFLINE_URL = "/offline.html";
 
 const PRECACHE_URLS = [

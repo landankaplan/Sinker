@@ -68,7 +68,7 @@ export async function GET(request, { params }) {
         }}
       >
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <div style={{ display: "flex", fontSize: 40, color: "#94a3b8", letterSpacing: 2 }}>SINKING FUND</div>
+          <div style={{ display: "flex", fontSize: 40, color: "#94a3b8", letterSpacing: 2 }}>SAVINGS GOAL</div>
           <div style={{ display: "flex", fontSize: 64, color: "#f8fafc", fontWeight: 700, marginTop: 16 }}>
             {displayName}
           </div>
@@ -125,7 +125,7 @@ export async function GET(request, { params }) {
         </div>
 
         <div style={{ display: "flex", fontSize: 40, color: "#f8fafc", fontWeight: 700, letterSpacing: 1 }}>
-          Sinker
+          StayAhead
         </div>
       </div>
     ),
@@ -133,7 +133,7 @@ export async function GET(request, { params }) {
       width: 1080,
       height: 1920,
       headers: {
-        "Content-Disposition": `attachment; filename="sinker-${safeFilenamePart}-share.png"`,
+        "Content-Disposition": `attachment; filename="stayahead-${safeFilenamePart}-share.png"`,
       },
     }
   );

@@ -45,9 +45,9 @@ export default function OnboardingWelcome() {
 
   return (
     <div className="mb-6 rounded-xl bg-white p-5 shadow-sm">
-      <p className="text-lg font-semibold text-ink">Welcome to Sinker 👋</p>
+      <p className="text-lg font-semibold text-ink">Welcome to StayAhead 👋</p>
       <p className="mt-1 text-sm text-ink-muted">
-        Sinker figures out exactly how much to set aside from each paycheck for bills and goals you know
+        StayAhead figures out exactly how much to set aside from each paycheck for bills and goals you know
         are coming. One quick thing first — how often do you get paid? This is used everywhere in the
         app, so getting it right now saves you from redoing the math later.
       </p>

@@ -4,8 +4,8 @@
 // supplies the icon, name, and colors to use when it is.
 export default function manifest() {
   return {
-    name: "Sinker",
-    short_name: "Sinker",
+    name: "StayAhead",
+    short_name: "StayAhead",
     description: "Save the right amount, every paycheck, for the bills you know are coming.",
     start_url: "/",
     display: "standalone",
