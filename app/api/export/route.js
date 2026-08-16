@@ -1,5 +1,16 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { formatDate } from "@/lib/calculations";
+
+// formatDate() itself doesn't guard against an empty/falsy input - passing
+// "" (used below for a fund with no completed_at) through `new Date("")`
+// produces the literal string "Invalid Date" rather than a real error,
+// which would otherwise show up as garbage in the "Completed" column for
+// every still-active fund. This keeps the CSV blank for those, matching
+// every other empty-cell convention in this export.
+function formatDateForCsv(value) {
+  return value ? formatDate(value) : "";
+}
 
 // Wraps a CSV field in double quotes and escapes any internal double
 // quotes by doubling them (the standard CSV escaping rule) - needed
@@ -87,11 +98,11 @@ export async function GET() {
       body += csvRow([
         fund.name,
         fund.target_amount,
-        fund.target_date,
+        formatDateForCsv(fund.target_date),
         status,
         fund.amount_saved || 0,
-        fund.created_at,
-        fund.completed_at || "",
+        formatDateForCsv(fund.created_at),
+        formatDateForCsv(fund.completed_at),
         "",
         "",
       ]);
@@ -100,13 +111,13 @@ export async function GET() {
         body += csvRow([
           fund.name,
           fund.target_amount,
-          fund.target_date,
+          formatDateForCsv(fund.target_date),
           status,
           fund.amount_saved || 0,
-          fund.created_at,
-          fund.completed_at || "",
+          formatDateForCsv(fund.created_at),
+          formatDateForCsv(fund.completed_at),
           c.amount,
-          c.contributed_at,
+          formatDateForCsv(c.contributed_at),
         ]);
       }
     }
