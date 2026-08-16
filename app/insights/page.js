@@ -66,7 +66,15 @@ export default async function InsightsPage() {
       <main className="mx-auto max-w-3xl px-4 py-8">
         <h1 className="mb-6 text-xl font-semibold text-ink dark:text-cream-50">Insights</h1>
 
-        {allFunds.length === 0 ? (
+        {/* Empty state only when there's truly nothing to show - no funds
+            AND no contribution history. Checking allFunds alone was wrong:
+            lifetime stats (contributionStats, below) come from
+            allContributions, which still includes orphaned rows from
+            deleted funds (see supabase/schema.sql's on-delete-set-null
+            migration) - so deleting your last fund used to hide real,
+            still-valid saved-money history behind this "add a fund" message
+            even though the numbers were sitting right there in the data. */}
+        {allFunds.length === 0 && allContributions.length === 0 ? (
           <p className="rounded-xl border border-dashed border-cream-100 bg-white p-6 text-center text-sm text-ink-muted dark:border-ink-800 dark:bg-ink-900 dark:text-ink-300">
             Add a fund and log a few contributions to start seeing insights here.
           </p>
