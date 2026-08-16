@@ -38,9 +38,23 @@ module.exports = {
         },
         coral: {
           50: "#fef1ea",
+          // 400: brighter/lighter than 500 - readable coral text on a dark
+          // surface (dark:text-coral-400 pattern). 950: a near-black,
+          // coral-tinted background for dark-mode badges/highlight panels
+          // (dark:bg-coral-950/NN). Both were referenced by dark: classes
+          // in several components before either shade actually existed in
+          // this palette - Tailwind silently drops a class referencing an
+          // undefined color/shade (no build error, no warning), so those
+          // dark: overrides were just never applying: a badge or panel
+          // that used bg-coral-50 in light mode stayed bg-coral-50 in dark
+          // mode too, instead of switching to a dark tint - which is what
+          // caused the "washed out / unreadable" dark-mode calendar detail
+          // panel bug.
+          400: "#f2895c",
           500: "#eb6834",
           600: "#d95926",
           700: "#c65a2a",
+          950: "#2e1309",
         },
       },
     },
