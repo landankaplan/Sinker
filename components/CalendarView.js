@@ -24,6 +24,11 @@ function buildGrid(year, month) {
 export default function CalendarView({ funds }) {
   const today = new Date();
   const [cursor, setCursor] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
+  // Which day number is expanded for detail, or null. Tapping a day with
+  // funds toggles this - separate from hover/title tooltips (which don't
+  // exist at all on touch devices, so this is the only way to see amounts
+  // on a phone).
+  const [selectedDay, setSelectedDay] = useState(null);
 
   const year = cursor.getFullYear();
   const month = cursor.getMonth();
@@ -52,7 +57,10 @@ export default function CalendarView({ funds }) {
     <div className="rounded-xl bg-white p-4 shadow-sm">
       <div className="mb-4 flex items-center justify-between">
         <button
-          onClick={() => setCursor(new Date(year, month - 1, 1))}
+          onClick={() => {
+            setCursor(new Date(year, month - 1, 1));
+            setSelectedDay(null);
+          }}
           className="rounded-md px-2 py-1 text-sm text-ink-muted hover:bg-cream-100"
           aria-label="Previous month"
         >
@@ -62,7 +70,10 @@ export default function CalendarView({ funds }) {
           {MONTH_NAMES[month]} {year}
         </h2>
         <button
-          onClick={() => setCursor(new Date(year, month + 1, 1))}
+          onClick={() => {
+            setCursor(new Date(year, month + 1, 1));
+            setSelectedDay(null);
+          }}
           className="rounded-md px-2 py-1 text-sm text-ink-muted hover:bg-cream-100"
           aria-label="Next month"
         >
@@ -72,7 +83,10 @@ export default function CalendarView({ funds }) {
 
       {!isCurrentMonth && (
         <button
-          onClick={() => setCursor(new Date(today.getFullYear(), today.getMonth(), 1))}
+          onClick={() => {
+            setCursor(new Date(today.getFullYear(), today.getMonth(), 1));
+            setSelectedDay(null);
+          }}
           className="mb-3 text-xs font-medium text-ink-muted underline"
         >
           Jump to today
@@ -90,15 +104,27 @@ export default function CalendarView({ funds }) {
       <div className="grid grid-cols-7 gap-1">
         {cells.map((day, i) => {
           const dayFunds = day ? fundsByDay[day] || [] : [];
+          const hasFunds = dayFunds.length > 0;
           const isToday =
             day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+          const isSelected = day === selectedDay;
+
+          // Only days WITH funds are interactive - an empty day has nothing
+          // to expand, so it stays a plain (non-focusable, non-clickable)
+          // cell rather than a button that does nothing.
+          const Cell = hasFunds ? "button" : "div";
 
           return (
-            <div
+            <Cell
               key={i}
-              className={`min-h-[64px] rounded-md border p-1 text-xs ${
+              type={hasFunds ? "button" : undefined}
+              onClick={hasFunds ? () => setSelectedDay(isSelected ? null : day) : undefined}
+              aria-label={hasFunds ? `${MONTH_NAMES[month]} ${day} — ${dayFunds.length} fund${dayFunds.length === 1 ? "" : "s"} due, tap for details` : undefined}
+              className={`min-h-[64px] rounded-md border p-1 text-left text-xs transition-colors ${
                 day ? "border-cream-100" : "border-transparent"
-              } ${isToday ? "border-coral-600" : ""}`}
+              } ${isToday ? "border-coral-600" : ""} ${hasFunds ? "cursor-pointer hover:bg-cream-100" : ""} ${
+                isSelected ? "bg-coral-50 ring-1 ring-coral-500" : ""
+              }`}
             >
               {day && (
                 <>
@@ -108,7 +134,6 @@ export default function CalendarView({ funds }) {
                   {dayFunds.map((fund) => (
                     <div
                       key={fund.id}
-                      title={`${fund.name} — ${formatCurrency(fund.target_amount)}`}
                       className="mb-1 truncate rounded bg-coral-600 px-1 py-0.5 text-[10px] text-white"
                     >
                       {fund.name}
@@ -116,10 +141,35 @@ export default function CalendarView({ funds }) {
                   ))}
                 </>
               )}
-            </div>
+            </Cell>
           );
         })}
       </div>
+
+      {selectedDay && (fundsByDay[selectedDay] || []).length > 0 && (
+        <div className="mt-3 rounded-lg border border-coral-500/30 bg-coral-50 p-3">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-semibold text-ink">
+              Due {MONTH_NAMES[month]} {selectedDay}
+            </p>
+            <button
+              onClick={() => setSelectedDay(null)}
+              className="text-xs text-ink-muted hover:text-ink"
+              aria-label="Close"
+            >
+              ✕
+            </button>
+          </div>
+          <ul className="mt-2 flex flex-col gap-1">
+            {(fundsByDay[selectedDay] || []).map((fund) => (
+              <li key={fund.id} className="flex items-center justify-between text-xs">
+                <span className="text-ink">{fund.name}</span>
+                <span className="font-medium text-ink-muted">{formatCurrency(fund.target_amount)}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {funds.length === 0 && (
         <p className="mt-4 text-center text-sm text-ink-muted">
