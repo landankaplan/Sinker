@@ -8,7 +8,14 @@ export async function GET(request) {
 
   if (code) {
     const supabase = createClient();
-    await supabase.auth.exchangeCodeForSession(code);
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    // A failed exchange (expired/already-used/invalid link) previously
+    // still redirected to "/" as if it worked - the user would just get
+    // silently bounced to /login with no session and no explanation. Now
+    // it lands on /login with a message instead.
+    if (error) {
+      return NextResponse.redirect(`${origin}/login?confirm_error=1`);
+    }
   }
 
   return NextResponse.redirect(`${origin}/`);

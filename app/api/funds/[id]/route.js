@@ -26,10 +26,14 @@ export async function PUT(request, { params }) {
   const updates = {};
 
   if (body.name !== undefined) {
-    if (!String(body.name).trim()) {
+    const trimmedName = String(body.name).trim();
+    if (!trimmedName) {
       return NextResponse.json({ error: "Name can't be empty." }, { status: 400 });
     }
-    updates.name = String(body.name).trim();
+    if (trimmedName.length > 200) {
+      return NextResponse.json({ error: "Name must be 200 characters or fewer." }, { status: 400 });
+    }
+    updates.name = trimmedName;
   }
 
   if (body.target_amount !== undefined) {
@@ -60,15 +64,27 @@ export async function PUT(request, { params }) {
   const manualCompletionChange = Object.prototype.hasOwnProperty.call(body, "completed_at");
   if (manualCompletionChange) {
     updates.completed_at = body.completed_at;
-  } else if (updates.amount_saved !== undefined) {
-    // Auto-complete only in reaction to a contribution actually reaching the
-    // target - NOT on every unrelated edit. This matters because a reopened
-    // fund (completed_at just set back to null) still has amount_saved >=
-    // target_amount until a new contribution changes it; if we re-checked
-    // that invariant on every save, the very next name/date/amount edit
-    // would instantly re-complete it and "reopen" would never stick.
-    const effectiveTarget = updates.target_amount ?? Number(existing.target_amount);
-    if (!existing.completed_at && updates.amount_saved >= effectiveTarget) {
+  } else if (updates.amount_saved !== undefined || updates.target_amount !== undefined) {
+    // Auto-complete on a FRESH crossing into "fully funded" - triggered by
+    // either a contribution raising amount_saved to meet the target, OR by
+    // target_amount itself being edited down to at/below what's already
+    // saved (both are "now funded" the same way). Comparing "was it already
+    // at/over target before this save" against "is it at/over target now"
+    // (rather than just checking the current state) is what lets a
+    // manually reopened fund (completed_at just set back to null, with
+    // amount_saved still >= target_amount at that moment) survive later
+    // unrelated edits without instantly re-completing - reopening leaves
+    // wasAlreadyAtOrOverTarget true, so nothing here re-fires until the
+    // fund is genuinely UNDER target and then crosses again.
+    const previousTarget = Number(existing.target_amount);
+    const previousSaved = Number(existing.amount_saved || 0);
+    const effectiveTarget = updates.target_amount ?? previousTarget;
+    const effectiveSaved = updates.amount_saved ?? previousSaved;
+
+    const wasAlreadyAtOrOverTarget = previousSaved >= previousTarget;
+    const isNowAtOrOverTarget = effectiveSaved >= effectiveTarget;
+
+    if (!existing.completed_at && !wasAlreadyAtOrOverTarget && isNowAtOrOverTarget) {
       updates.completed_at = new Date().toISOString();
     }
   }

@@ -30,15 +30,26 @@ export default function FundForm({ showExamples = false }) {
     setError(null);
     setSubmitting(true);
 
-    const res = await fetch("/api/funds", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name,
-        target_amount: parseFloat(targetAmount),
-        target_date: targetDate,
-      }),
-    });
+    let res;
+    try {
+      res = await fetch("/api/funds", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          target_amount: parseFloat(targetAmount),
+          target_date: targetDate,
+        }),
+      });
+    } catch (err) {
+      // A network failure throws before a response exists - without this
+      // catch, submitting never flips back to false and "Add fund" stays
+      // disabled forever with no explanation. See SettingsForm.js for the
+      // same pattern.
+      setSubmitting(false);
+      setError("Couldn't reach the server. Check your connection and try again.");
+      return;
+    }
 
     setSubmitting(false);
 

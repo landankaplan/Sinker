@@ -20,9 +20,19 @@ export default async function DashboardPage() {
   // 30 days is the widest window calculateShortfallProjection ever looks at
   // (see lib/calculations.js) - fetching that much history up front here
   // means the per-fund math never needs another round-trip.
-  const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-  thirtyDaysAgo.setHours(0, 0, 0, 0);
+  //
+  // Deliberately NOT truncated to local midnight, and padded by an extra
+  // day: this runs on the server (Vercel functions run in UTC), but the
+  // actual 30-day window boundary calculateShortfallProjection uses is
+  // computed client-side, in FundCard, against the VIEWER's local midnight.
+  // For a viewer in a timezone ahead of UTC, their local midnight is
+  // earlier than server-UTC midnight of the same date - a cutoff truncated
+  // to server-local midnight could exclude a few real hours of
+  // contributions the client-side window actually wants. Fetching a wider,
+  // untruncated range here is harmless (calculateShortfallProjection
+  // re-trims to the exact window it needs client-side anyway) and removes
+  // the failure mode entirely, regardless of either party's timezone.
+  const thirtyDaysAgo = new Date(Date.now() - 31 * 24 * 60 * 60 * 1000);
 
   const [{ data: funds }, { data: settings }, { data: recentContributions }, { data: allContributions }] =
     await Promise.all([

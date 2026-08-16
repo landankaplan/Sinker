@@ -84,11 +84,22 @@ export default function FundCard({ fund, paycheckFrequency, completed = false, r
   async function patchFund(body) {
     setBusy(true);
     setError(null);
-    const res = await fetch(`/api/funds/${fund.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
+    let res;
+    try {
+      res = await fetch(`/api/funds/${fund.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+    } catch (err) {
+      // A network failure throws before a response exists - without this
+      // catch, `busy` never flips back to false and every button on this
+      // card (save, add contribution, mark complete, delete) stays
+      // disabled forever with no explanation.
+      setBusy(false);
+      setError("Couldn't reach the server. Check your connection and try again.");
+      return null;
+    }
     const data = await res.json().catch(() => ({}));
     setBusy(false);
 
@@ -132,7 +143,14 @@ export default function FundCard({ fund, paycheckFrequency, completed = false, r
   async function handleDelete() {
     setBusy(true);
     setError(null);
-    const res = await fetch(`/api/funds/${fund.id}`, { method: "DELETE" });
+    let res;
+    try {
+      res = await fetch(`/api/funds/${fund.id}`, { method: "DELETE" });
+    } catch (err) {
+      setBusy(false);
+      setError("Couldn't reach the server. Check your connection and try again.");
+      return;
+    }
     setBusy(false);
 
     if (!res.ok) {

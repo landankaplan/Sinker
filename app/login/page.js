@@ -1,17 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import PasswordInput from "@/components/PasswordInput";
 
-export default function LoginPage() {
+// useSearchParams() requires a Suspense boundary in Next.js 14's App
+// Router (`next build` fails without one - "missing-suspense-with-csr-
+// bailout") - so the actual form lives in a child component, wrapped by
+// the default export below.
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const supabase = createClient();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
+  // Seeded from ?confirm_error=1 (see app/auth/callback/route.js) when an
+  // email confirmation link was expired/invalid/already used - lets the
+  // user know why they landed here instead of silently failing.
+  const [error, setError] = useState(
+    searchParams.get("confirm_error")
+      ? "That confirmation link didn't work — it may have expired or already been used. Try logging in below, or sign up again."
+      : null
+  );
   const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit(e) {
@@ -67,5 +79,13 @@ export default function LoginPage() {
         </Link>
       </p>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
   );
 }

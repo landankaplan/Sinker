@@ -11,9 +11,13 @@ export default async function CalendarPage() {
 
   if (!user) redirect("/login");
 
+  // Completed funds have nothing left "due" - showing them on the calendar
+  // as if they still needed action was the bug (a fully-funded goal kept
+  // appearing on its due date forever). Only active funds belong here.
   const { data: funds } = await supabase
     .from("sinking_funds")
     .select("*")
+    .is("completed_at", null)
     .order("target_date", { ascending: true });
 
   return (

@@ -90,9 +90,24 @@ drop policy if exists "select own contributions" on public.fund_contributions;
 create policy "select own contributions" on public.fund_contributions
   for select using (auth.uid() = user_id);
 
+-- Checks BOTH that the row's user_id is the caller AND that fund_id
+-- actually points to a fund that same caller owns - without the second
+-- check, a signed-in user could (by calling Supabase directly, not through
+-- the app's own /api routes) insert a contribution row that references
+-- someone else's fund id. Harmless today (nothing currently reads
+-- fund_contributions across users), but a real gap in what the database
+-- itself enforces, which is the whole point of RLS.
 drop policy if exists "insert own contributions" on public.fund_contributions;
 create policy "insert own contributions" on public.fund_contributions
-  for insert with check (auth.uid() = user_id);
+  for insert
+  with check (
+    auth.uid() = user_id
+    and exists (
+      select 1 from public.sinking_funds
+      where sinking_funds.id = fund_contributions.fund_id
+        and sinking_funds.user_id = auth.uid()
+    )
+  );
 
 -- Email notifications: whether this user wants due-date reminders and
 -- underfunded-goal alerts at all. Defaults to true (opt-out, not opt-in) so

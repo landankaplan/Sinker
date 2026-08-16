@@ -44,11 +44,18 @@ export default function OnboardingWelcome() {
     setSubmitting(true);
     setError(null);
 
-    const res = await fetch("/api/settings", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ paycheck_frequency: chosenFrequency }),
-    });
+    let res;
+    try {
+      res = await fetch("/api/settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ paycheck_frequency: chosenFrequency }),
+      });
+    } catch (err) {
+      setSubmitting(false);
+      setError("Couldn't reach the server. Check your connection and try again.");
+      return;
+    }
 
     setSubmitting(false);
 

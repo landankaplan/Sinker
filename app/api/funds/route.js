@@ -33,6 +33,9 @@ export async function POST(request) {
   if (!name || typeof name !== "string" || !name.trim()) {
     return NextResponse.json({ error: "Name is required." }, { status: 400 });
   }
+  if (name.trim().length > 200) {
+    return NextResponse.json({ error: "Name must be 200 characters or fewer." }, { status: 400 });
+  }
   if (!target_amount || Number.isNaN(Number(target_amount)) || Number(target_amount) <= 0) {
     return NextResponse.json({ error: "Target amount must be a positive number." }, { status: 400 });
   }
