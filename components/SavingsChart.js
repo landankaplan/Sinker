@@ -75,9 +75,9 @@ export default function SavingsChart({ points }) {
   const activeIndex = hoverIndex !== null ? hoverIndex : lastIndex;
 
   return (
-    <div className="rounded-xl bg-white p-4 shadow-sm">
+    <div className="rounded-xl bg-white p-4 shadow-sm dark:border dark:border-ink-800 dark:bg-ink-900">
       <div className="flex items-baseline justify-between">
-        <p className="text-xs font-medium uppercase tracking-wide text-ink-muted">Total saved, last 90 days</p>
+        <p className="text-xs font-medium uppercase tracking-wide text-ink-muted dark:text-ink-300">Total saved, last 90 days</p>
         <p className="text-sm font-semibold text-coral-600">{formatCurrency(active.total)}</p>
       </div>
 
@@ -90,16 +90,34 @@ export default function SavingsChart({ points }) {
         onPointerLeave={() => setHoverIndex(null)}
       >
         {gridLines.map((y, i) => (
-          <line key={i} x1={PAD_LEFT} x2={WIDTH - PAD_RIGHT} y1={y} y2={y} stroke="#f1e5da" strokeWidth="1" />
+          <line
+            key={i}
+            x1={PAD_LEFT}
+            x2={WIDTH - PAD_RIGHT}
+            y1={y}
+            y2={y}
+            className="stroke-cream-100 dark:stroke-ink-800"
+            strokeWidth="1"
+          />
         ))}
 
-        <path d={areaPath} fill="#d95926" fillOpacity="0.1" stroke="none" />
-        <path d={path} fill="none" stroke="#d95926" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+        <path d={areaPath} className="fill-coral-600" fillOpacity="0.1" stroke="none" />
+        <path
+          d={path}
+          fill="none"
+          className="stroke-coral-600"
+          strokeWidth="2"
+          strokeLinejoin="round"
+          strokeLinecap="round"
+        />
 
         {/* End marker: the mark spec's >=8px dot with a surface ring so it
-            stays legible where it meets the line. */}
-        <circle cx={xFor(lastIndex)} cy={yFor(lastPoint.total)} r="6" fill="#fdf9f5" />
-        <circle cx={xFor(lastIndex)} cy={yFor(lastPoint.total)} r="4" fill="#d95926" />
+            stays legible where it meets the line. The ring matches this
+            chart's own card background (white in light mode, ink-900 in
+            dark), not the page background, so it reads as a gap rather
+            than a mismatched dot. */}
+        <circle cx={xFor(lastIndex)} cy={yFor(lastPoint.total)} r="6" className="fill-white dark:fill-ink-900" />
+        <circle cx={xFor(lastIndex)} cy={yFor(lastPoint.total)} r="4" className="fill-coral-600" />
 
         {/* Crosshair + hover marker - the dataviz default hover layer. */}
         {hoverIndex !== null && (
@@ -109,16 +127,28 @@ export default function SavingsChart({ points }) {
               x2={xFor(hoverIndex)}
               y1={PAD_TOP}
               y2={HEIGHT - PAD_BOTTOM}
-              stroke="#c3c2b7"
+              className="stroke-[#c3c2b7] dark:stroke-ink-300"
               strokeWidth="1"
             />
-            <circle cx={xFor(hoverIndex)} cy={yFor(points[hoverIndex].total)} r="6" fill="#fdf9f5" />
-            <circle cx={xFor(hoverIndex)} cy={yFor(points[hoverIndex].total)} r="4" fill="#d95926" />
+            <circle
+              cx={xFor(hoverIndex)}
+              cy={yFor(points[hoverIndex].total)}
+              r="6"
+              className="fill-white dark:fill-ink-900"
+            />
+            <circle cx={xFor(hoverIndex)} cy={yFor(points[hoverIndex].total)} r="4" className="fill-coral-600" />
           </>
         )}
 
         {/* Value at the line's end, per the mark spec ("Lines -> value at the end"). */}
-        <text x={xFor(lastIndex) - 4} y={PAD_TOP - 12} textAnchor="end" fontSize="11" fontWeight="600" fill="#2b2420">
+        <text
+          x={xFor(lastIndex) - 4}
+          y={PAD_TOP - 12}
+          textAnchor="end"
+          fontSize="11"
+          fontWeight="600"
+          className="fill-ink dark:fill-cream-50"
+        >
           {formatCurrency(lastPoint.total)}
         </text>
 
@@ -130,7 +160,7 @@ export default function SavingsChart({ points }) {
               y={HEIGHT - 6}
               textAnchor={i === 0 ? "start" : i === lastIndex ? "end" : "middle"}
               fontSize="10"
-              fill="#898781"
+              className="fill-ink-muted dark:fill-ink-300"
             >
               {p.dateLabel}
             </text>
@@ -139,8 +169,9 @@ export default function SavingsChart({ points }) {
       </svg>
 
       {hoverIndex !== null && (
-        <p className="text-center text-[11px] text-ink-muted">
-          {points[activeIndex].dateLabel}: <span className="font-semibold text-ink">{formatCurrency(points[activeIndex].total)}</span>
+        <p className="text-center text-[11px] text-ink-muted dark:text-ink-300">
+          {points[activeIndex].dateLabel}:{" "}
+          <span className="font-semibold text-ink dark:text-cream-50">{formatCurrency(points[activeIndex].total)}</span>
         </p>
       )}
     </div>

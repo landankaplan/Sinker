@@ -7,7 +7,7 @@ export default function StreakBadge({ streak, paycheckFrequency }) {
   const unit = paycheckFrequency === "weekly" ? "week" : paycheckFrequency === "biweekly" ? "pay period" : "month";
 
   return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-coral-50 px-2.5 py-1 text-xs font-semibold text-coral-700">
+    <span className="inline-flex items-center gap-1 rounded-full bg-coral-50 px-2.5 py-1 text-xs font-semibold text-coral-700 dark:bg-coral-950/30 dark:text-coral-400">
       🔥 {streak} {unit}
       {streak === 1 ? "" : "s"} in a row
     </span>

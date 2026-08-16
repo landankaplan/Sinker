@@ -69,34 +69,34 @@ export default function OnboardingWelcome() {
   }
 
   return (
-    <div className="mb-6 overflow-hidden rounded-xl bg-white shadow-sm">
+    <div className="mb-6 overflow-hidden rounded-xl bg-white shadow-sm dark:border dark:border-ink-800 dark:bg-ink-900">
       <div className="p-5 pb-4">
-        <p className="text-lg font-semibold text-ink">Welcome to StayAhead 👋</p>
-        <p className="mt-1 text-sm text-ink-muted">
+        <p className="text-lg font-semibold text-ink dark:text-cream-50">Welcome to StayAhead 👋</p>
+        <p className="mt-1 text-sm text-ink-muted dark:text-ink-300">
           Three quick things to know before you get started:
         </p>
       </div>
 
-      <ol className="grid grid-cols-1 gap-4 border-t border-cream-100 p-5 pt-4 sm:grid-cols-3">
+      <ol className="grid grid-cols-1 gap-4 border-t border-cream-100 p-5 pt-4 dark:border-ink-800 sm:grid-cols-3">
         {STEPS.map((step, i) => (
           <li key={step.title} className="flex flex-col items-start gap-1.5">
             <span
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-coral-50 text-base"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-coral-50 text-base dark:bg-coral-950/30"
               aria-hidden="true"
             >
               {step.emoji}
             </span>
-            <p className="text-sm font-semibold text-ink">
+            <p className="text-sm font-semibold text-ink dark:text-cream-50">
               {i + 1}. {step.title}
             </p>
-            <p className="text-xs text-ink-muted">{step.body}</p>
+            <p className="text-xs text-ink-muted dark:text-ink-300">{step.body}</p>
           </li>
         ))}
       </ol>
 
-      <div className="border-t border-cream-100 bg-cream-50/60 p-5">
-        <p className="text-xs font-medium text-ink-muted">One thing first — how often do you get paid?</p>
-        <p className="mt-1 text-xs text-ink-muted">
+      <div className="border-t border-cream-100 bg-cream-50/60 p-5 dark:border-ink-800 dark:bg-ink-950/40">
+        <p className="text-xs font-medium text-ink-muted dark:text-ink-300">One thing first — how often do you get paid?</p>
+        <p className="mt-1 text-xs text-ink-muted dark:text-ink-300">
           This is used everywhere in the app, so getting it right now saves you from redoing the math later.
         </p>
         <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end">
@@ -104,7 +104,7 @@ export default function OnboardingWelcome() {
             <select
               value={frequency}
               onChange={(e) => setFrequency(e.target.value)}
-              className="w-full rounded-md border border-cream-100 bg-white px-3 py-2 text-sm focus:border-coral-500 focus:outline-none focus:ring-1 focus:ring-coral-500"
+              className="w-full rounded-md border border-cream-100 bg-white px-3 py-2 text-sm text-ink focus:border-coral-500 focus:outline-none focus:ring-1 focus:ring-coral-500 dark:border-ink-800 dark:bg-ink-900 dark:text-cream-50"
             >
               {OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -125,12 +125,12 @@ export default function OnboardingWelcome() {
             type="button"
             onClick={() => save("monthly")}
             disabled={submitting}
-            className="text-sm text-ink-muted hover:text-ink"
+            className="text-sm text-ink-muted hover:text-ink dark:text-ink-300 dark:hover:text-cream-50"
           >
             Skip — assume monthly
           </button>
         </div>
-        {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+        {error && <p className="mt-2 text-sm text-red-600 dark:text-red-400">{error}</p>}
       </div>
     </div>
   );

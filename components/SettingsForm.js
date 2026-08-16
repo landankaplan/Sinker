@@ -61,14 +61,14 @@ export default function SettingsForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex max-w-sm flex-col gap-4 rounded-xl bg-white p-4 shadow-sm"
+      className="flex max-w-sm flex-col gap-4 rounded-xl bg-white p-4 shadow-sm dark:border dark:border-ink-800 dark:bg-ink-900"
     >
       <div className="flex flex-col gap-3">
-        <label className="text-sm font-medium text-ink">How often do you get paid?</label>
+        <label className="text-sm font-medium text-ink dark:text-cream-50">How often do you get paid?</label>
         <select
           value={frequency}
           onChange={(e) => setFrequency(e.target.value)}
-          className="rounded-md border border-cream-100 px-3 py-2 text-sm focus:border-coral-500 focus:outline-none focus:ring-1 focus:ring-coral-500"
+          className="rounded-md border border-cream-100 bg-white px-3 py-2 text-sm text-ink focus:border-coral-500 focus:outline-none focus:ring-1 focus:ring-coral-500 dark:border-ink-800 dark:bg-ink-900 dark:text-cream-50"
         >
           {OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>
@@ -76,27 +76,27 @@ export default function SettingsForm({
             </option>
           ))}
         </select>
-        <p className="text-xs text-ink-muted">
+        <p className="text-xs text-ink-muted dark:text-ink-300">
           This is used to calculate how much to save per paycheck across all your funds.
         </p>
       </div>
 
-      <div className="border-t border-cream-100 pt-4">
+      <div className="border-t border-cream-100 pt-4 dark:border-ink-800">
         <label className="flex items-start gap-2">
           <input
             type="checkbox"
             checked={emailNotificationsEnabled}
             onChange={(e) => setEmailNotificationsEnabled(e.target.checked)}
-            className="mt-0.5 h-4 w-4 rounded border-cream-100 text-coral-600 focus:ring-coral-500"
+            className="mt-0.5 h-4 w-4 rounded border-cream-100 text-coral-600 focus:ring-coral-500 dark:border-ink-800"
           />
-          <span className="text-sm font-medium text-ink">Email me reminders</span>
+          <span className="text-sm font-medium text-ink dark:text-cream-50">Email me reminders</span>
         </label>
-        <p className="mt-1 text-xs text-ink-muted">
+        <p className="mt-1 text-xs text-ink-muted dark:text-ink-300">
           Get an email when a fund is due in 7 days or 1 day, and when a fund falls behind an even
           savings pace. At most one alert per fund per week.
         </p>
         {!emailConfigured && (
-          <p className="mt-2 text-xs font-medium text-amber-600">
+          <p className="mt-2 text-xs font-medium text-amber-600 dark:text-amber-500">
             Email sending isn't configured yet — this will start working once RESEND_API_KEY and
             EMAIL_FROM are set in the app's environment.
           </p>
@@ -104,7 +104,7 @@ export default function SettingsForm({
       </div>
 
       {error && (
-        <p className="rounded-md bg-red-50 px-3 py-2 text-xs font-medium text-red-700">{error}</p>
+        <p className="rounded-md bg-red-50 px-3 py-2 text-xs font-medium text-red-700 dark:bg-red-950/40 dark:text-red-400">{error}</p>
       )}
 
       <button

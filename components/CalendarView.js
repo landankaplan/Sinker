@@ -54,19 +54,19 @@ export default function CalendarView({ funds }) {
   const isCurrentMonth = year === today.getFullYear() && month === today.getMonth();
 
   return (
-    <div className="rounded-xl bg-white p-4 shadow-sm">
+    <div className="rounded-xl bg-white p-4 shadow-sm dark:border dark:border-ink-800 dark:bg-ink-900">
       <div className="mb-4 flex items-center justify-between">
         <button
           onClick={() => {
             setCursor(new Date(year, month - 1, 1));
             setSelectedDay(null);
           }}
-          className="rounded-md px-2 py-1 text-sm text-ink-muted hover:bg-cream-100"
+          className="rounded-md px-2 py-1 text-sm text-ink-muted hover:bg-cream-100 dark:text-ink-300 dark:hover:bg-ink-800"
           aria-label="Previous month"
         >
           ← Prev
         </button>
-        <h2 className="text-sm font-semibold text-ink">
+        <h2 className="text-sm font-semibold text-ink dark:text-cream-50">
           {MONTH_NAMES[month]} {year}
         </h2>
         <button
@@ -74,7 +74,7 @@ export default function CalendarView({ funds }) {
             setCursor(new Date(year, month + 1, 1));
             setSelectedDay(null);
           }}
-          className="rounded-md px-2 py-1 text-sm text-ink-muted hover:bg-cream-100"
+          className="rounded-md px-2 py-1 text-sm text-ink-muted hover:bg-cream-100 dark:text-ink-300 dark:hover:bg-ink-800"
           aria-label="Next month"
         >
           Next →
@@ -87,13 +87,13 @@ export default function CalendarView({ funds }) {
             setCursor(new Date(today.getFullYear(), today.getMonth(), 1));
             setSelectedDay(null);
           }}
-          className="mb-3 text-xs font-medium text-ink-muted underline"
+          className="mb-3 text-xs font-medium text-ink-muted underline dark:text-ink-300"
         >
           Jump to today
         </button>
       )}
 
-      <div className="grid grid-cols-7 gap-1 text-center text-xs font-medium text-ink-muted">
+      <div className="grid grid-cols-7 gap-1 text-center text-xs font-medium text-ink-muted dark:text-ink-300">
         {WEEKDAYS.map((wd) => (
           <div key={wd} className="py-1">
             {wd}
@@ -125,14 +125,14 @@ export default function CalendarView({ funds }) {
               onClick={hasFunds ? () => setSelectedDay(isSelected ? null : day) : undefined}
               aria-label={hasFunds ? `${MONTH_NAMES[month]} ${day} — ${dayFunds.length} fund${dayFunds.length === 1 ? "" : "s"} due, tap for details` : undefined}
               className={`min-h-[64px] rounded-md border p-1 text-left text-xs transition-colors ${
-                day ? "border-cream-100" : "border-transparent"
-              } ${isToday ? "border-coral-600" : ""} ${hasFunds ? "cursor-pointer hover:bg-cream-100" : ""} ${
-                isSelected ? "bg-coral-50 ring-1 ring-coral-500" : ""
+                day ? "border-cream-100 dark:border-ink-800" : "border-transparent"
+              } ${isToday ? "border-coral-600" : ""} ${hasFunds ? "cursor-pointer hover:bg-cream-100 dark:hover:bg-ink-800" : ""} ${
+                isSelected ? "bg-coral-50 ring-1 ring-coral-500 dark:bg-coral-950/30" : ""
               }`}
             >
               {day && (
                 <>
-                  <div className={`mb-1 ${isToday ? "font-bold text-coral-600" : "text-ink-muted"}`}>
+                  <div className={`mb-1 ${isToday ? "font-bold text-coral-600" : "text-ink-muted dark:text-ink-300"}`}>
                     {day}
                   </div>
                   {dayFunds.map((fund) => (
@@ -151,14 +151,14 @@ export default function CalendarView({ funds }) {
       </div>
 
       {selectedDay && (fundsByDay[selectedDay] || []).length > 0 && (
-        <div className="mt-3 rounded-lg border border-coral-500/30 bg-coral-50 p-3">
+        <div className="mt-3 rounded-lg border border-coral-500/30 bg-coral-50 p-3 dark:bg-coral-950/20">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold text-ink">
+            <p className="text-xs font-semibold text-ink dark:text-cream-50">
               Due {MONTH_NAMES[month]} {selectedDay}
             </p>
             <button
               onClick={() => setSelectedDay(null)}
-              className="text-xs text-ink-muted hover:text-ink"
+              className="text-xs text-ink-muted hover:text-ink dark:text-ink-300 dark:hover:text-cream-50"
               aria-label="Close"
             >
               ✕
@@ -167,8 +167,8 @@ export default function CalendarView({ funds }) {
           <ul className="mt-2 flex flex-col gap-1">
             {(fundsByDay[selectedDay] || []).map((fund) => (
               <li key={fund.id} className="flex items-center justify-between text-xs">
-                <span className="text-ink">{fund.name}</span>
-                <span className="font-medium text-ink-muted">{formatCurrency(fund.target_amount)}</span>
+                <span className="text-ink dark:text-cream-50">{fund.name}</span>
+                <span className="font-medium text-ink-muted dark:text-ink-300">{formatCurrency(fund.target_amount)}</span>
               </li>
             ))}
           </ul>
@@ -176,7 +176,7 @@ export default function CalendarView({ funds }) {
       )}
 
       {funds.length === 0 && (
-        <p className="mt-4 text-center text-sm text-ink-muted">
+        <p className="mt-4 text-center text-sm text-ink-muted dark:text-ink-300">
           No funds yet — add one from the Funds tab and it'll show up here on its due date.
         </p>
       )}

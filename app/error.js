@@ -25,10 +25,10 @@ export default function GlobalError({ error, reset }) {
   }, [error]);
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-cream-50 px-4 text-center">
+    <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-cream-50 px-4 text-center dark:bg-ink-950">
       <p className="text-4xl">😬</p>
-      <h1 className="text-lg font-semibold text-ink">Something went wrong</h1>
-      <p className="max-w-sm text-sm text-ink-muted">
+      <h1 className="text-lg font-semibold text-ink dark:text-cream-50">Something went wrong</h1>
+      <p className="max-w-sm text-sm text-ink-muted dark:text-ink-300">
         That wasn't supposed to happen. Your funds and account are safe — this was just a hiccup loading the
         page. Try again, and it's already been logged so it can get fixed.
       </p>
@@ -41,7 +41,7 @@ export default function GlobalError({ error, reset }) {
         </button>
         <a
           href="/"
-          className="rounded-md border border-cream-100 px-4 py-2 text-sm text-ink hover:bg-cream-100"
+          className="rounded-md border border-cream-100 px-4 py-2 text-sm text-ink hover:bg-cream-100 dark:border-ink-800 dark:text-cream-50 dark:hover:bg-ink-800"
         >
           Go home
         </a>

@@ -10,7 +10,7 @@ const EXAMPLES = [
 ];
 
 const inputClass =
-  "mt-1 w-full rounded-md border border-cream-100 px-3 py-2 text-sm focus:border-coral-500 focus:outline-none focus:ring-1 focus:ring-coral-500";
+  "mt-1 w-full rounded-md border border-cream-100 bg-white px-3 py-2 text-sm text-ink focus:border-coral-500 focus:outline-none focus:ring-1 focus:ring-coral-500 dark:border-ink-800 dark:bg-ink-900 dark:text-cream-50";
 
 export default function FundForm({ showExamples = false }) {
   const router = useRouter();
@@ -69,17 +69,17 @@ export default function FundForm({ showExamples = false }) {
     <form
       id="fund-form"
       onSubmit={handleSubmit}
-      className="mb-6 flex flex-col gap-3 rounded-xl bg-white p-4 shadow-sm"
+      className="mb-6 flex flex-col gap-3 rounded-xl bg-white p-4 shadow-sm dark:border dark:border-ink-800 dark:bg-ink-900"
     >
       {showExamples && (
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-medium text-ink-muted">Try an example:</span>
+          <span className="text-xs font-medium text-ink-muted dark:text-ink-300">Try an example:</span>
           {EXAMPLES.map((example) => (
             <button
               key={example.name}
               type="button"
               onClick={() => applyExample(example)}
-              className="rounded-full bg-cream-100 px-3 py-1 text-xs font-medium text-ink-muted hover:bg-coral-50 hover:text-coral-600"
+              className="rounded-full bg-cream-100 px-3 py-1 text-xs font-medium text-ink-muted hover:bg-coral-50 hover:text-coral-600 dark:bg-ink-800 dark:text-ink-300 dark:hover:bg-ink-800 dark:hover:text-coral-500"
             >
               {example.name}
             </button>
@@ -88,7 +88,7 @@ export default function FundForm({ showExamples = false }) {
       )}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
         <div className="flex-1">
-          <label className="block text-xs font-medium text-ink-muted">Name</label>
+          <label className="block text-xs font-medium text-ink-muted dark:text-ink-300">Name</label>
           <input
             required
             value={name}
@@ -98,7 +98,7 @@ export default function FundForm({ showExamples = false }) {
           />
         </div>
         <div className="w-full sm:w-32">
-          <label className="block text-xs font-medium text-ink-muted">Target amount</label>
+          <label className="block text-xs font-medium text-ink-muted dark:text-ink-300">Target amount</label>
           <input
             required
             type="number"
@@ -111,7 +111,7 @@ export default function FundForm({ showExamples = false }) {
           />
         </div>
         <div className="w-full sm:w-40">
-          <label className="block text-xs font-medium text-ink-muted">Due date</label>
+          <label className="block text-xs font-medium text-ink-muted dark:text-ink-300">Due date</label>
           <input
             required
             type="date"

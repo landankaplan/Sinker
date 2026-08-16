@@ -113,10 +113,10 @@ export default async function DashboardPage() {
 
         <div className="mb-6 flex flex-wrap items-center justify-between gap-2">
           <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-xl font-semibold text-ink">Your funds</h1>
+            <h1 className="text-xl font-semibold text-ink dark:text-cream-50">Your funds</h1>
             <StreakBadge streak={streak} paycheckFrequency={paycheckFrequency} />
           </div>
-          <span className="text-sm text-ink-muted">
+          <span className="text-sm text-ink-muted dark:text-ink-300">
             Paycheck frequency: <span className="font-medium capitalize">{paycheckFrequency}</span>
           </span>
         </div>
@@ -127,16 +127,16 @@ export default async function DashboardPage() {
           </div>
         )}
 
-        <div className="mb-6 rounded-xl bg-white p-4 shadow-sm">
-          <p className="text-xs font-medium uppercase tracking-wide text-ink-muted">
+        <div className="mb-6 rounded-xl bg-white p-4 shadow-sm dark:border dark:border-ink-800 dark:bg-ink-900">
+          <p className="text-xs font-medium uppercase tracking-wide text-ink-muted dark:text-ink-300">
             Average needed per month
           </p>
           <p className="mt-1 text-2xl font-bold text-coral-600">{formatCurrency(totalMonthly)}</p>
-          <p className="mt-1 text-xs text-ink-muted">
+          <p className="mt-1 text-xs text-ink-muted dark:text-ink-300">
             {SUMMARY_NOTE[paycheckFrequency] || SUMMARY_NOTE.monthly}
           </p>
           {fundsBehindPace > 0 && (
-            <p className="mt-2 text-xs font-medium text-amber-600">
+            <p className="mt-2 text-xs font-medium text-amber-600 dark:text-amber-500">
               {fundsBehindPace} fund{fundsBehindPace === 1 ? "" : "s"} behind pace
             </p>
           )}

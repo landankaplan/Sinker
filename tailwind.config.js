@@ -1,5 +1,10 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  // Class-based (not media-query-based) dark mode: a `dark` class on <html>
+  // toggles every `dark:` variant. Driven by components/ThemeToggle.js +
+  // the inline anti-flash script in app/layout.js, not the OS setting
+  // alone - see that script's comment for why.
+  darkMode: "class",
   content: [
     "./app/**/*.{js,jsx}",
     "./components/**/*.{js,jsx}",
@@ -20,6 +25,16 @@ module.exports = {
         ink: {
           DEFAULT: "#2b2420",
           muted: "#6b5f54",
+          // Dark-mode-only steps, named on the same `ink` (warm brown/black)
+          // ramp rather than introducing a separate gray scale, so dark
+          // mode still reads as "the same app, inverted" rather than a
+          // generic gray dashboard bolted on. 300 = muted text on dark
+          // surfaces, 800 = borders/subtle-fill on dark surfaces, 900 =
+          // card surfaces, 950 = page background.
+          300: "#a89a8c",
+          800: "#3a322c",
+          900: "#241f1b",
+          950: "#18140f",
         },
         coral: {
           50: "#fef1ea",

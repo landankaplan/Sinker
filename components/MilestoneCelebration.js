@@ -72,13 +72,13 @@ export default function MilestoneCelebration({ fundName, onDismiss }) {
       </div>
 
       <div
-        className="relative mx-4 max-w-xs rounded-2xl bg-white p-6 text-center shadow-lg"
+        className="relative mx-4 max-w-xs rounded-2xl bg-white p-6 text-center shadow-lg dark:border dark:border-ink-800 dark:bg-ink-900"
         onClick={(e) => e.stopPropagation()}
       >
         <p className="text-4xl">🎉</p>
-        <p className="mt-2 text-lg font-bold text-ink">Fully funded!</p>
-        <p className="mt-1 text-sm text-ink-muted">
-          <span className="font-semibold text-ink">{fundName}</span> just hit its goal.
+        <p className="mt-2 text-lg font-bold text-ink dark:text-cream-50">Fully funded!</p>
+        <p className="mt-1 text-sm text-ink-muted dark:text-ink-300">
+          <span className="font-semibold text-ink dark:text-cream-50">{fundName}</span> just hit its goal.
         </p>
         <button
           onClick={() => setVisible(false)}

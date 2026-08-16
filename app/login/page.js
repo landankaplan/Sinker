@@ -46,8 +46,8 @@ function LoginForm() {
 
   return (
     <main className="mx-auto flex min-h-screen max-w-sm flex-col justify-center px-4">
-      <h1 className="mb-1 text-xl font-semibold text-ink">Log in</h1>
-      <p className="mb-6 text-sm text-ink-muted">Welcome back to StayAhead.</p>
+      <h1 className="mb-1 text-xl font-semibold text-ink dark:text-cream-50">Log in</h1>
+      <p className="mb-6 text-sm text-ink-muted dark:text-ink-300">Welcome back to StayAhead.</p>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <input
           required
@@ -55,7 +55,7 @@ function LoginForm() {
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="rounded-md border border-cream-100 px-3 py-2 text-sm focus:border-coral-500 focus:outline-none focus:ring-1 focus:ring-coral-500"
+          className="rounded-md border border-cream-100 bg-white px-3 py-2 text-sm text-ink focus:border-coral-500 focus:outline-none focus:ring-1 focus:ring-coral-500 dark:border-ink-800 dark:bg-ink-900 dark:text-cream-50"
         />
         <PasswordInput
           value={password}
@@ -63,7 +63,7 @@ function LoginForm() {
           placeholder="Password"
           autoComplete="current-password"
         />
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
         <button
           type="submit"
           disabled={submitting}
@@ -72,7 +72,7 @@ function LoginForm() {
           {submitting ? "Logging in…" : "Log in"}
         </button>
       </form>
-      <p className="mt-4 text-sm text-ink-muted">
+      <p className="mt-4 text-sm text-ink-muted dark:text-ink-300">
         No account yet?{" "}
         <Link href="/signup" className="font-medium text-coral-600 underline">
           Sign up

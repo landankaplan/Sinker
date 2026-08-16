@@ -24,7 +24,7 @@ export default async function CalendarPage() {
     <>
       <Nav />
       <main className="mx-auto max-w-3xl px-4 py-8">
-        <h1 className="mb-6 text-xl font-semibold text-ink">Calendar</h1>
+        <h1 className="mb-6 text-xl font-semibold text-ink dark:text-cream-50">Calendar</h1>
         <CalendarView funds={funds || []} />
       </main>
     </>

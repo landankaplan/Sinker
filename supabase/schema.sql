@@ -109,6 +109,18 @@ create policy "insert own contributions" on public.fund_contributions
     )
   );
 
+-- Lets a user delete their own logged contributions - powers the
+-- "fix a mistake" flow in components/ContributionHistory.js (see
+-- app/api/funds/[id]/contributions/[contributionId]/route.js). Without this
+-- policy, RLS silently blocks every delete (0 rows affected, no error
+-- returned), which would make that route's DELETE call a no-op that still
+-- reports success and still decrements the fund's amount_saved as if the
+-- row were actually gone - a real, previously-missing policy, not just a
+-- defensive extra.
+drop policy if exists "delete own contributions" on public.fund_contributions;
+create policy "delete own contributions" on public.fund_contributions
+  for delete using (auth.uid() = user_id);
+
 -- Email notifications: whether this user wants due-date reminders and
 -- underfunded-goal alerts at all. Defaults to true (opt-out, not opt-in) so
 -- the feature is actually experienced by default once it's configured -
