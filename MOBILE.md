@@ -1,6 +1,6 @@
 # Putting StayAhead on the App Store / Google Play, later
 
-> The live site is at `stayahead-kaplan.vercel.app` — renamed from the old
+> The live site is at `stayahead-1.vercel.app` — renamed from the old
 > `sinker-one.vercel.app` address to match the app's name.
 
 Not needed yet — this is just the checklist for whenever you're ready
@@ -36,7 +36,7 @@ Capacitor at your live URL sidesteps that entirely.
 3. **Point it at your live site** instead of bundling a static copy — in
    the generated `capacitor.config.json`, set:
    ```json
-   { "server": { "url": "https://stayahead-kaplan.vercel.app", "cleartext": false } }
+   { "server": { "url": "https://stayahead-1.vercel.app", "cleartext": false } }
    ```
 4. **Native icons/splash screens**: reuse the same coral calendar+dollar mark
    already in `public/icons/` at higher resolution via `@capacitor/assets`.
@@ -58,6 +58,6 @@ to build now — just worth knowing before you commit to a plan later.
 ## Renaming the live URL to match
 
 Done — the live site moved from `sinker-one.vercel.app` to
-`stayahead-kaplan.vercel.app`. Anyone with the old address saved to a home
+`stayahead-1.vercel.app`. Anyone with the old address saved to a home
 screen will need to remove that icon and re-add it from the new one; the
 old link isn't guaranteed to keep working.
