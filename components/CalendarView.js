@@ -107,7 +107,11 @@ export default function CalendarView({ funds }) {
           const hasFunds = dayFunds.length > 0;
           const isToday =
             day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
-          const isSelected = day === selectedDay;
+          // day !== null matters here: selectedDay starts out null too, so
+          // without this every empty padding cell (before day 1 / after
+          // the month's last day) would falsely match "null === null" and
+          // render as if selected.
+          const isSelected = day !== null && day === selectedDay;
 
           // Only days WITH funds are interactive - an empty day has nothing
           // to expand, so it stays a plain (non-focusable, non-clickable)
