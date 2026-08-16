@@ -69,9 +69,18 @@ export async function GET() {
   if (fundsError) return NextResponse.json({ error: fundsError.message }, { status: 500 });
   if (contributionsError) return NextResponse.json({ error: contributionsError.message }, { status: 500 });
 
+  // Contributions whose fund was later deleted have fund_id = null (see
+  // supabase/schema.sql's on-delete-set-null migration) - they're grouped
+  // under the "null" key here so they can be emitted as their own rows
+  // below, instead of silently vanishing from the export. Without this,
+  // the CSV's totals would undercount vs. what the Insights tab shows,
+  // since Insights counts all of a user's contributions regardless of
+  // whether their fund still exists, but this loop used to only ever walk
+  // the CURRENT funds list.
   const contributionsByFund = (contributions || []).reduce((byFund, c) => {
-    if (!byFund[c.fund_id]) byFund[c.fund_id] = [];
-    byFund[c.fund_id].push(c);
+    const key = c.fund_id === null ? "orphaned" : c.fund_id;
+    if (!byFund[key]) byFund[key] = [];
+    byFund[key].push(c);
     return byFund;
   }, {});
 
@@ -121,6 +130,30 @@ export async function GET() {
         ]);
       }
     }
+  }
+
+  // Contributions logged against a fund that's since been deleted. These
+  // still count toward your lifetime saved total (that's the whole point
+  // of the on-delete-set-null migration - deleting a fund shouldn't erase
+  // the money you actually saved), so they get their own rows here rather
+  // than being left out of the export. There's no fund left to pull
+  // target/status/created/completed info from, so those columns are blank
+  // for these rows - only the fund name column gets a placeholder, since
+  // leaving it blank too would make these rows look like a parsing error
+  // rather than an intentional "no fund" case.
+  const orphanedContributions = contributionsByFund.orphaned || [];
+  for (const c of orphanedContributions) {
+    body += csvRow([
+      "(deleted fund)",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      c.amount,
+      formatDateForCsv(c.contributed_at),
+    ]);
   }
 
   const csv = header + body;
