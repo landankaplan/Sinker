@@ -69,10 +69,13 @@ drop policy if exists "delete own funds" on public.sinking_funds;
 create policy "delete own funds" on public.sinking_funds
   for delete using (auth.uid() = user_id);
 
--- One row per contribution event (append-only log, not editable/deletable
--- via the app). Powers the behind-pace insight and, later, streaks and
--- rate-based shortfall projections - none of which are computable from a
--- single running total.
+-- One row per contribution event. Powers the behind-pace insight, streaks,
+-- rate-based shortfall projections, and the Insights tab - none of which
+-- are computable from a single running total. Originally append-only from
+-- the app's point of view; the contribution-history "fix a mistake" flow
+-- (see the delete policy further down, and
+-- app/api/funds/[id]/contributions/[contributionId]/route.js) later added
+-- the ability to remove a single mistaken entry.
 create table if not exists public.fund_contributions (
   id uuid primary key default gen_random_uuid(),
   fund_id uuid not null references public.sinking_funds(id) on delete cascade,
@@ -183,3 +186,31 @@ create table if not exists public.error_log (
 create index if not exists error_log_created_at_idx on public.error_log(created_at);
 
 alter table public.error_log enable row level security;
+
+-- Deleting a fund used to cascade-delete every contribution ever logged
+-- against it ("on delete cascade" above), which quietly wiped that money
+-- out of lifetime stats too - the Insights tab's "Saved all-time" number
+-- would drop the moment you deleted an old fund, even though you genuinely
+-- saved that money at some point. That's surprising: deleting a fund
+-- should remove it from your active list, not erase the history of what
+-- you actually saved.
+--
+-- Switching to "on delete set null" keeps the contribution rows (and the
+-- money they represent) after their fund is gone - they just become
+-- unowned by any specific fund. Insights' lifetime totals (which query by
+-- user_id only, not fund_id) keep counting them; anything that looks up
+-- contributions BY fund_id (the per-fund history panel, the CSV export)
+-- naturally stops showing them, since there's no fund left to attach them
+-- to - which is the correct behavior for those.
+--
+-- This only changes behavior for FUTURE fund deletions. Contributions
+-- belonging to funds already deleted before this migration ran were
+-- already cascade-deleted and can't be recovered - there's no copy of
+-- that data left anywhere to restore from.
+alter table public.fund_contributions
+  drop constraint if exists fund_contributions_fund_id_fkey;
+alter table public.fund_contributions
+  alter column fund_id drop not null;
+alter table public.fund_contributions
+  add constraint fund_contributions_fund_id_fkey
+  foreign key (fund_id) references public.sinking_funds(id) on delete set null;
