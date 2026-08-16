@@ -9,6 +9,7 @@ import {
   formatCurrency,
   formatDate,
 } from "@/lib/calculations";
+import MilestoneCelebration from "@/components/MilestoneCelebration";
 
 const inputClass =
   "mt-1 w-full rounded-md border border-cream-100 px-3 py-2 text-sm focus:border-coral-500 focus:outline-none focus:ring-1 focus:ring-coral-500";
@@ -22,6 +23,10 @@ export default function FundCard({ fund, paycheckFrequency, completed = false, r
   const [contribution, setContribution] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
+  // Only ever set true by a same-session transition into "completed" (see
+  // patchFund) - never on initial load of an already-completed fund, so
+  // reopening the dashboard doesn't re-celebrate every old completion.
+  const [showCelebration, setShowCelebration] = useState(false);
 
   // Mirrors the `fund` prop, but is updated immediately from each PUT
   // response rather than waiting on router.refresh() to deliver fresh
@@ -90,6 +95,12 @@ export default function FundCard({ fund, paycheckFrequency, completed = false, r
     if (!res.ok) {
       setError(data.error || "Something went wrong.");
       return null;
+    }
+    // Detect a fresh completion (wasn't completed before this save, is now)
+    // before overwriting fundState - covers both the auto-complete-on-
+    // contribution path and the manual "Mark complete" toggle.
+    if (!fundState.completed_at && data.fund.completed_at) {
+      setShowCelebration(true);
     }
     setFundState(data.fund);
     router.refresh();
@@ -190,7 +201,10 @@ export default function FundCard({ fund, paycheckFrequency, completed = false, r
   }
 
   return (
-    <li className={`rounded-xl p-4 shadow-sm ${completed ? "bg-cream-100/50" : "bg-white"}`}>
+    <li className={`rounded-xl p-4 shadow-sm transition-shadow hover:shadow-md ${completed ? "bg-cream-100/50" : "bg-white"}`}>
+      {showCelebration && (
+        <MilestoneCelebration fundName={fundState.name} onDismiss={() => setShowCelebration(false)} />
+      )}
       <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
         <div className="flex-1">
           <p className="font-medium text-ink">

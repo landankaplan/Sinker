@@ -115,6 +115,16 @@ create table if not exists public.notification_log (
   sent_at timestamptz not null default now()
 );
 
+-- Widen the allowed notification types to include 'inactivity' (the "gone
+-- quiet" nudge - see lib/notifications.js's shouldSendInactivityNudge).
+-- Safe to re-run: drops and re-adds the same auto-named check constraint
+-- Postgres created for the inline `check` above.
+alter table public.notification_log
+  drop constraint if exists notification_log_notification_type_check;
+alter table public.notification_log
+  add constraint notification_log_notification_type_check
+  check (notification_type in ('due_in_7', 'due_in_1', 'underfunded', 'inactivity'));
+
 create index if not exists notification_log_fund_type_idx on public.notification_log(fund_id, notification_type);
 
 -- This table is only ever written by the cron route using the service-role
@@ -127,3 +137,22 @@ alter table public.notification_log enable row level security;
 drop policy if exists "select own notification log" on public.notification_log;
 create policy "select own notification log" on public.notification_log
   for select using (auth.uid() = user_id);
+
+-- Lightweight, self-hosted error log for real-user crashes - a free
+-- alternative to a third-party error-tracking service. Written only by
+-- app/api/log-error/route.js using the service-role admin client (bypasses
+-- RLS), and only ever read directly in the Supabase dashboard's table
+-- editor - no in-app UI exposes this to users, so no select policy is
+-- needed for regular users either.
+create table if not exists public.error_log (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users(id) on delete set null,
+  message text not null,
+  stack text,
+  url text,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists error_log_created_at_idx on public.error_log(created_at);
+
+alter table public.error_log enable row level security;

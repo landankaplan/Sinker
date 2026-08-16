@@ -2,6 +2,7 @@ import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import InstallTracking from "@/components/InstallTracking";
+import Footer from "@/components/Footer";
 
 export const metadata = {
   title: "StayAhead",
@@ -36,8 +37,9 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-cream-50 text-ink">
+      <body className="flex min-h-screen flex-col bg-cream-50 text-ink">
         {children}
+        <Footer />
         <ServiceWorkerRegister />
         <InstallTracking />
         <Analytics />

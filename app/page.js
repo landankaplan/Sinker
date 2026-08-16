@@ -4,7 +4,10 @@ import Nav from "@/components/Nav";
 import FundForm from "@/components/FundForm";
 import FundList from "@/components/FundList";
 import OnboardingWelcome from "@/components/OnboardingWelcome";
+import StreakBadge from "@/components/StreakBadge";
+import SavingsChart from "@/components/SavingsChart";
 import { calculatePerPaycheck, calculateBehindPace, toMonthlyAmount, formatCurrency } from "@/lib/calculations";
+import { calculateSavingStreak, buildCumulativeSavingsSeries } from "@/lib/insights";
 
 export default async function DashboardPage() {
   const supabase = createClient();
@@ -21,21 +24,32 @@ export default async function DashboardPage() {
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
   thirtyDaysAgo.setHours(0, 0, 0, 0);
 
-  const [{ data: funds }, { data: settings }, { data: recentContributions }] = await Promise.all([
-    supabase
-      .from("sinking_funds")
-      .select("*")
-      .order("target_date", { ascending: true }),
-    supabase.from("user_settings").select("paycheck_frequency").eq("user_id", user.id).maybeSingle(),
-    supabase
-      .from("fund_contributions")
-      .select("fund_id, amount, contributed_at")
-      .eq("user_id", user.id)
-      .gte("contributed_at", thirtyDaysAgo.toISOString()),
-  ]);
+  const [{ data: funds }, { data: settings }, { data: recentContributions }, { data: allContributions }] =
+    await Promise.all([
+      supabase
+        .from("sinking_funds")
+        .select("*")
+        .order("target_date", { ascending: true }),
+      supabase.from("user_settings").select("paycheck_frequency").eq("user_id", user.id).maybeSingle(),
+      supabase
+        .from("fund_contributions")
+        .select("fund_id, amount, contributed_at")
+        .eq("user_id", user.id)
+        .gte("contributed_at", thirtyDaysAgo.toISOString()),
+      // Full (not just 30-day) history, across every fund - powers the
+      // streak badge and the "total saved over time" chart below, both of
+      // which need to know about activity older than 30 days.
+      supabase.from("fund_contributions").select("amount, contributed_at").eq("user_id", user.id),
+    ]);
 
   const paycheckFrequency = settings?.paycheck_frequency || "monthly";
   const allFunds = funds || [];
+
+  const { streak } = calculateSavingStreak(allContributions || [], paycheckFrequency);
+  const savingsSeries = buildCumulativeSavingsSeries(allContributions || [], { days: 90 }).map((p) => ({
+    dateLabel: p.date.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+    total: p.total,
+  }));
 
   // Group the flat contribution list by fund so each FundCard only has to
   // look at its own history.
@@ -87,12 +101,21 @@ export default async function DashboardPage() {
       <main className="mx-auto max-w-3xl px-4 py-8">
         {!settings && <OnboardingWelcome />}
 
-        <div className="mb-6 flex items-center justify-between">
-          <h1 className="text-xl font-semibold text-ink">Your funds</h1>
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-xl font-semibold text-ink">Your funds</h1>
+            <StreakBadge streak={streak} paycheckFrequency={paycheckFrequency} />
+          </div>
           <span className="text-sm text-ink-muted">
             Paycheck frequency: <span className="font-medium capitalize">{paycheckFrequency}</span>
           </span>
         </div>
+
+        {savingsSeries.some((p) => p.total > 0) && (
+          <div className="mb-6">
+            <SavingsChart points={savingsSeries} />
+          </div>
+        )}
 
         <div className="mb-6 rounded-xl bg-white p-4 shadow-sm">
           <p className="text-xs font-medium uppercase tracking-wide text-ink-muted">

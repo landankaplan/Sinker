@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendEmail, buildDigestEmail } from "@/lib/email";
 import { calculateBehindPace } from "@/lib/calculations";
-import { getDueSoonReminderType, shouldSendUnderfundedAlert } from "@/lib/notifications";
+import { getDueSoonReminderType, shouldSendUnderfundedAlert, shouldSendInactivityNudge } from "@/lib/notifications";
 
 // Never cache a cron response - every run must actually re-query current
 // data, not serve a stale one from a previous invocation.
@@ -61,6 +61,7 @@ export async function GET(request) {
   let emailsSent = 0;
   let reminderCount = 0;
   let alertCount = 0;
+  let inactivityCount = 0;
   const errors = [];
 
   for (const userId of enabledUserIds) {
@@ -78,8 +79,27 @@ export async function GET(request) {
       const email = userResult?.data?.user?.email;
       if (!email || !funds || funds.length === 0) continue;
 
+      // Full (not just recent) contribution history for this user's active
+      // funds - shouldSendInactivityNudge needs the true last-activity
+      // date, which could be well outside a 30-day window for a fund
+      // that's genuinely gone quiet.
+      const { data: allContributions, error: contributionsError } = await supabase
+        .from("fund_contributions")
+        .select("fund_id, contributed_at")
+        .eq("user_id", userId);
+
+      if (contributionsError) {
+        errors.push(`user ${userId}: ${contributionsError.message}`);
+      }
+      const contributionsByFund = (allContributions || []).reduce((byFund, c) => {
+        if (!byFund[c.fund_id]) byFund[c.fund_id] = [];
+        byFund[c.fund_id].push(c);
+        return byFund;
+      }, {});
+
       const dueSoon = [];
       const underfunded = [];
+      const inactive = [];
 
       for (const fund of funds) {
         const amountSaved = Number(fund.amount_saved || 0);
@@ -128,11 +148,30 @@ export async function GET(request) {
             }
           }
         }
+
+        // --- Inactivity nudge (fires at most once every 14 days per fund) ---
+        const { data: lastNudge, error: lastNudgeError } = await supabase
+          .from("notification_log")
+          .select("sent_at")
+          .eq("fund_id", fund.id)
+          .eq("notification_type", "inactivity")
+          .order("sent_at", { ascending: false })
+          .limit(1);
+
+        if (lastNudgeError) {
+          errors.push(`fund ${fund.id}: ${lastNudgeError.message}`);
+        } else {
+          const lastNudgeAt = lastNudge && lastNudge[0] ? lastNudge[0].sent_at : null;
+          const fundContributions = contributionsByFund[fund.id] || [];
+          if (shouldSendInactivityNudge(fund.created_at, fundContributions, lastNudgeAt, today)) {
+            inactive.push({ name: fund.name, fundId: fund.id });
+          }
+        }
       }
 
-      if (dueSoon.length === 0 && underfunded.length === 0) continue;
+      if (dueSoon.length === 0 && underfunded.length === 0 && inactive.length === 0) continue;
 
-      const { subject, html } = buildDigestEmail({ dueSoon, underfunded });
+      const { subject, html } = buildDigestEmail({ dueSoon, underfunded, inactive });
       const result = await sendEmail({ to: email, subject, html });
 
       if (result.skipped) {
@@ -147,10 +186,12 @@ export async function GET(request) {
       emailsSent += 1;
       reminderCount += dueSoon.length;
       alertCount += underfunded.length;
+      inactivityCount += inactive.length;
 
       const logRows = [
         ...dueSoon.map((f) => ({ user_id: userId, fund_id: f.fundId, notification_type: f.type })),
         ...underfunded.map((f) => ({ user_id: userId, fund_id: f.fundId, notification_type: "underfunded" })),
+        ...inactive.map((f) => ({ user_id: userId, fund_id: f.fundId, notification_type: "inactivity" })),
       ];
       const { error: logError } = await supabase.from("notification_log").insert(logRows);
       if (logError) errors.push(`user ${userId}: logged email but failed to record it - ${logError.message}`);
@@ -164,6 +205,7 @@ export async function GET(request) {
     emailsSent,
     reminderCount,
     alertCount,
+    inactivityCount,
     errors,
   });
 }

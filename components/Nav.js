@@ -31,7 +31,7 @@ export default function Nav() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`rounded-md px-2 py-1 text-sm font-medium sm:px-3 sm:py-1.5 ${
+                className={`rounded-md px-2 py-1 text-sm font-medium transition-colors sm:px-3 sm:py-1.5 ${
                   pathname === link.href
                     ? "bg-coral-600 text-white"
                     : "text-ink-muted hover:bg-cream-100"
